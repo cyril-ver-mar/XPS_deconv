@@ -31,6 +31,7 @@ Put plotting in `src/ui/components/` (e.g. `spectrum_viewer.py` + `plots.py`):
 | Y bounds | On first init / “Fit all data”, use **all** series (raw, baseline, corrected, fit, components), not raw alone |
 | Invert X | Compact control **outside** the settings accordion; must not clear ranges |
 | Dense settings | Collapsed `st.expander("Plot settings", expanded=False)` **below** the plot |
+| Raster export | In Plot settings: PNG/JPEG/TIFF via `plot_export.py` (inches × DPI → Prepare → Download) |
 | Trace toggles | Checkboxes with stable keys; no `value=` after first seed (avoids reset fights) |
 | Plotly | Constant `uirevision` per viewer; enforce stored axis ranges every redraw |
 

@@ -13,6 +13,7 @@ import streamlit as st
 
 from src.core.models import BeWindow
 from src.ui.components.help import help_mark, labeled_help
+from src.ui.components.plot_export import render_plot_export_controls
 from src.ui.components.plots import PlotViewState, spectrum_figure
 from src.utils.i18n import t
 
@@ -216,5 +217,9 @@ def render_spectrum_viewer(
             with t4:
                 st.checkbox(t("trace_components", lang), key=vis_keys["components"])
                 st.checkbox(t("trace_fills", lang), key=vis_keys["fills"])
+
+        st.divider()
+        stem = title.strip() if title else viewer_key
+        render_plot_export_controls(fig, key=viewer_key, lang=lang, default_stem=stem or "spectrum")
 
     return view

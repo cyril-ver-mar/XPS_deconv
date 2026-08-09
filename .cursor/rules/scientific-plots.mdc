@@ -14,6 +14,7 @@ Full playbook: `docs/AI-deployment/TASK_PLAYBOOKS/11_scientific_plots_ux.md`.
 - **Invert X** must not reset axis ranges or trace visibility.
 - Seed axis ranges once (`*_ranges_initialized`); Y bounds from **all** series on fit/reset.
 - Prefer metrics cards + dataframes; do not show raw JSON next to the same data.
+- Graph export (PNG/JPEG/TIFF, inches + DPI) lives in Plot settings via `plot_export.py`.
 - Preview vs Apply for baseline/denoise-style steps.
 - Parameter ❔ helpers for non-obvious options.
 - Never nest peak/list editors under one-shot `if pending_*` branches.

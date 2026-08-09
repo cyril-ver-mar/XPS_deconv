@@ -57,7 +57,7 @@ Optional tests:
 | **Deconvolution** | Peak list, constraints, run fit, metrics, main spectrum plot + uncertainty panel |
 | **Fit sequence** | Compare successive fit snapshots (R, R², RMSE, overlays) |
 | **Peak library** | Edit / add / delete core-level peak types; restore built-in defaults |
-| **Sessions / Export** | Save/load analysis sessions; Excel / CSV / PNG export |
+| **Sessions / Export** | Save/load analysis sessions; Excel / CSV; graph PNG/JPEG/TIFF from Plot settings |
 | **Documentation** | This guide (in-app) |
 | **Settings** | Paths, language |
 
@@ -130,6 +130,7 @@ Do not commit `venv/`, secrets, or bulky runtime data.
 | Port 8501 busy | Stop the other Streamlit, or set `STREAMLIT_SERVER_PORT` |
 | Import errors after pull | Re-run install to refresh dependencies |
 | Plot Y range wrong after fit | Use **Fit all data in view** under Plot settings |
+| Need publication figure | **Plot settings → Export graph**: PNG / JPEG / TIFF, inches + DPI |
 
 ---
 

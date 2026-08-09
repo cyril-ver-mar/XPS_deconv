@@ -2,14 +2,14 @@
 
 **App display name:** XPS-Deconv  
 **Last updated:** 2026-08-09  
-**Version:** see root `VERSION` (semver). Git tags: `vMAJOR.MINOR.PATCH` (e.g. `v1.0.1`).
+**Version:** see root `VERSION` (semver). Git tags: `vMAJOR.MINOR.PATCH` (e.g. `v1.0.2`).
 
 ## Versioning (locked)
 
 | Piece | Rule |
 |-------|------|
-| Source of truth | Root file `VERSION` (one line, e.g. `1.0.1`) |
-| Git tag | `v` + same number (`v1.0.1`) |
+| Source of truth | Root file `VERSION` (one line, e.g. `1.0.2`) |
+| Git tag | `v` + same number (`v1.0.2`) |
 | Code | `src/utils/version.py` → `get_version()` / `version_label()` |
 | UI | Settings page shows the version |
 | Bump | PATCH = fixes/polish; MINOR = features; MAJOR = breaking |
@@ -31,6 +31,7 @@
 | Constraints | Fixed FWHM, linked doublets, shared sigma — on/off + ❔ helpers |
 | Fit UX | Trace toggles, fill colors/alpha, R & R² & RMSE, fit sequence compare, interactive workspace |
 | Plot UX | Plot first; settings accordion collapsed below; invert X retains ranges; Y fit uses all series |
+| Plot export | Plot settings → PNG / JPEG / TIFF; size in inches + DPI (Kaleido + Pillow) |
 | Results UI | Metric cards + dataframes only — no raw JSON dumps next to tables |
 | Peak library UI | `st.data_editor` table; add/delete core levels; restore defaults |
 | Page order | Home → Import → Interactive → analysis → Documentation → Settings |

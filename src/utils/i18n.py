@@ -111,6 +111,24 @@ STRINGS: Dict[str, Dict[str, str]] = {
     "y_min": {"en": "Y min", "ru": "Y мин"},
     "y_max": {"en": "Y max", "ru": "Y макс"},
     "empty_spectrum": {"en": "Empty spectrum — nothing to plot.", "ru": "Пустой спектр — нечего рисовать."},
+    "export_graph": {"en": "Export graph", "ru": "Экспорт графика"},
+    "export_graph_help": {
+        "en": "Raster export for papers/slides. Size in inches × DPI → pixel resolution.",
+        "ru": "Растровый экспорт для статей/слайдов. Размер в дюймах × DPI → разрешение в пикселях.",
+    },
+    "export_format": {"en": "Format", "ru": "Формат"},
+    "export_width_in": {"en": "Width (in)", "ru": "Ширина (дюйм)"},
+    "export_height_in": {"en": "Height (in)", "ru": "Высота (дюйм)"},
+    "export_dpi": {"en": "DPI (resolution)", "ru": "DPI (разрешение)"},
+    "export_jpeg_quality": {"en": "JPEG quality", "ru": "Качество JPEG"},
+    "export_pixels_hint": {
+        "en": "Output size: {w} × {h} px at {dpi} DPI",
+        "ru": "Размер файла: {w} × {h} пикс. при {dpi} DPI",
+    },
+    "export_prepare": {"en": "Prepare image", "ru": "Подготовить изображение"},
+    "export_download": {"en": "Download image", "ru": "Скачать изображение"},
+    "export_ready": {"en": "Ready ({n} bytes). Click Download.", "ru": "Готово ({n} байт). Нажмите «Скачать»."},
+    "export_failed": {"en": "Export failed: {err}", "ru": "Ошибка экспорта: {err}"},
     # Peak library
     "peak_lib_caption": {
         "en": "Edit peak types (core levels) and peaks (name + BE). Restore defaults anytime.",
