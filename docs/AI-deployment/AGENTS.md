@@ -30,9 +30,10 @@ In order:
 1. `DEPLOY_CHECKLIST.md` — **ask the user** every section (implement: yes / no / later)  
 2. `ARCHITECTURE.md` — default layering, run pattern, **general AI checklist**  
 3. `SKILLS_GUIDE.md` — which skills to invoke  
-4. Relevant `TASK_PLAYBOOKS/*.md` for “yes” items  
+4. Relevant `TASK_PLAYBOOKS/*.md` for “yes” items (incl. `11_scientific_plots_ux.md` if C6/G4)  
 5. `TEMPLATES/` for file shapes (including `Instruction_Streamlit_TEMPLATE.md`)  
 6. `EXAMPLES/chemistry/` only if the project is chemistry / cheminformatics  
+7. For spectroscopy / curve apps, prefer playbook 11 patterns even when G1 = no 
 
 Also run personal skill **`project-jumpstart`** and **`clarify-algorithm`** when available.
 

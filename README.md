@@ -14,9 +14,11 @@ Product decisions: [docs/DECISIONS.md](docs/DECISIONS.md).
 
 ## Install & run
 
+Scripts use a Claude-style terminal UI (colored steps + actionable errors).
+
 ```bash
-./install.sh
-./run.sh
+./install.sh   # Python 3.11 venv + deps + smoke test (from scratch)
+./run.sh       # Streamlit → http://localhost:8501
 ```
 
 Windows:
@@ -26,15 +28,17 @@ install.bat
 run.bat
 ```
 
-Open http://localhost:8501
+In-app guide: **Documentation** page (also `docs/USER_GUIDE.md` / `docs/USER_GUIDE_ru.md`).
 
 ## Workflow
 
-1. Import VGD (one spectrum)  
-2. Crop region (sliders / presets / numeric / brush)  
-3. Baseline (median noise-floor recommended; Shirley / Tougaard / smooth also available)  
-4. Deconvolution (Gaussian / Lorentzian / Voigt / PseudoVoigt)  
-5. Save session + export Excel / CSV / PNG  
+1. **Projects & Import** — create/load project, upload many VGDs, choose one spectrum  
+2. **Region crop** — ROI; invert X / axis ranges / reset on every plot  
+3. **Baseline** — reworked denoise + baseline (demo gallery + ❔ helpers)  
+4. **Deconvolution** — peaks (default tolerance 0), R / R², fills, sequence snapshots  
+5. **Fit sequence** — compare multiple fits (graphs + tables)  
+6. **Interactive workspace** — all-in-one live tuning, grey previous fit, save/recall  
+7. **Sessions / Export** — Excel / CSV / PNG  
 
 ## Layout
 

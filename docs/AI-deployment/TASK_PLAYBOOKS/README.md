@@ -14,3 +14,4 @@ Ask the user (DEPLOY_CHECKLIST) before implementing each.
 | `08_testing.md` | pytest |
 | `09_polish_pipeline.md` | Phased polish |
 | `10_packaging_deferred.md` | Scripts-first shipping |
+| `11_scientific_plots_ux.md` | Spectra/plots: retain view, preview/apply, ❔ helpers |

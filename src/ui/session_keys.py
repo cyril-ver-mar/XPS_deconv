@@ -8,16 +8,18 @@ from src.core.models import BaselineSettings, FitConstraints
 from src.utils.cancel import CancelToken
 
 DEFAULTS: Dict[str, Any] = {
-    "lang": "en",
+    "lang": "ru",
+    "project": None,
     "full_spectrum": None,
     "active_spectrum": None,
     "vgd_labels": [],
     "vgd_path": None,
     "spectrum_index": 0,
-    "region": None,  # (be_min, be_max)
+    "region": None,
     "baseline_settings": BaselineSettings(),
     "noise_method": "none",
     "noise_window": 5,
+    "savgol_poly": 2,
     "peak_model": "pseudovoigt",
     "peak_configs": [],
     "fit_constraints": FitConstraints(),
@@ -25,12 +27,17 @@ DEFAULTS: Dict[str, Any] = {
     "baseline": None,
     "smoothed": None,
     "best_fit": None,
+    "previous_fit": None,
     "peaks_df": None,
     "metrics": None,
     "fit_components": None,
+    "fit_history": [],
+    "saved_fits": {},
+    "last_fit_id": None,
     "cancel_token": CancelToken(),
     "pending_region_min": None,
     "pending_region_max": None,
+    "overlay_saved_fit_id": None,
 }
 
 
@@ -39,14 +46,15 @@ def init_session_state() -> None:
 
     for key, value in DEFAULTS.items():
         if key not in st.session_state:
-            # Fresh instances for mutable defaults
             if key == "baseline_settings":
                 st.session_state[key] = BaselineSettings()
             elif key == "fit_constraints":
                 st.session_state[key] = FitConstraints()
             elif key == "cancel_token":
                 st.session_state[key] = CancelToken()
-            elif key == "peak_configs":
+            elif key in ("peak_configs", "fit_history"):
                 st.session_state[key] = []
+            elif key == "saved_fits":
+                st.session_state[key] = {}
             else:
                 st.session_state[key] = value

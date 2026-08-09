@@ -30,8 +30,12 @@ def build_session_payload(state: Dict[str, Any]) -> Dict[str, Any]:
     baseline: Optional[BaselineSettings] = state.get("baseline_settings")
     constraints: Optional[FitConstraints] = state.get("fit_constraints")
     peaks_df: Optional[pd.DataFrame] = state.get("peaks_df")
+    peaks_records = None
+    if peaks_df is not None:
+        peaks_records = peaks_df.to_dict(orient="records")
+    metrics = state.get("metrics")
     return {
-        "version": 1,
+        "version": 2,
         "saved_at": datetime.now(timezone.utc).isoformat(),
         "full_spectrum": None if full is None else full.to_serializable(),
         "active_spectrum": None if active is None else active.to_serializable(),
@@ -48,8 +52,9 @@ def build_session_payload(state: Dict[str, Any]) -> Dict[str, Any]:
             "enable_doublet_links": constraints.enable_doublet_links,
             "shared_sigma": constraints.shared_sigma,
         },
-        "metrics": state.get("metrics"),
-        "peaks_table": None if peaks_df is None else peaks_df.to_dict(orient="list"),
+        "metrics": metrics,
+        "peaks": peaks_records,  # human-readable list of objects
+        "peaks_table": peaks_records,  # alias for older loaders
         "corrected": None
         if state.get("corrected") is None
         else np.asarray(state["corrected"]).tolist(),
@@ -101,8 +106,9 @@ def load_session(path: str | Path) -> Dict[str, Any]:
         shared_sigma=bool(fc.get("shared_sigma", False)),
     )
     out["metrics"] = payload.get("metrics")
-    if payload.get("peaks_table"):
-        out["peaks_df"] = pd.DataFrame(payload["peaks_table"])
+    peaks_payload = payload.get("peaks") or payload.get("peaks_table")
+    if peaks_payload:
+        out["peaks_df"] = pd.DataFrame(peaks_payload)
     for key in ("corrected", "baseline", "best_fit"):
         if payload.get(key) is not None:
             out[key] = np.asarray(payload[key], dtype=float)

@@ -43,8 +43,9 @@ Default prompt style:
 | C3 | Widget pending-key pattern (no assign after instantiate) | |
 | C4 | Soft cancel for jobs expected > ~20s | |
 | C5 | i18n helper (EN now, bilingual later) | |
+| C6 | Scientific plot viewer UX (retain axes, collapsed settings, preview/apply) | See playbook 11 |
 
-→ `TASK_PLAYBOOKS/01_multipage_session_state.md`, `03_widget_pending_keys.md`, `04_long_jobs_soft_cancel.md`, `07_i18n.md`
+→ `TASK_PLAYBOOKS/01_multipage_session_state.md`, `03_widget_pending_keys.md`, `04_long_jobs_soft_cancel.md`, `07_i18n.md`, `11_scientific_plots_ux.md`
 
 ---
 
@@ -95,6 +96,7 @@ Do **not** assume the Virtual Screening layout. Clarify:
 | G1 | Chemistry / RDKit stack (`EXAMPLES/chemistry/`) | |
 | G2 | Vendor structure editors (JSME / Ketcher / Marvin) | |
 | G3 | Other domain pack: ___ | |
+| G4 | Spectroscopy / curve-fitting plot pack (playbook 11) | |
 
 ---
 
@@ -105,6 +107,7 @@ Do **not** assume the Virtual Screening layout. Clarify:
 | H1 | Install general rules from `CURSOR/rules/` into `.cursor/rules/` | |
 | H2 | Install chemistry example rules (only if G1 = yes) | |
 | H3 | Point user at personal skills in `SKILLS_GUIDE.md` | |
+| H4 | Install `scientific-plots.EXAMPLE.mdc` if C6 / G4 = yes | |
 
 ---
 

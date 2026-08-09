@@ -58,7 +58,7 @@ class SpectrumData:
 class PeakConfig:
     name: str
     center: float
-    tolerance: float = 0.5
+    tolerance: float = 0.0
     sigma: float = 1.0
     amplitude: Optional[float] = None
     fraction: float = 0.5  # PseudoVoigt / GL mix

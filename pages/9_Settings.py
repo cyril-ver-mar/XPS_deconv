@@ -16,16 +16,21 @@ from src.ui.session_keys import init_session_state
 from src.utils.i18n import t
 from src.utils.paths import DATA_DIR, EXPORTS_DIR, ROOT as PROJECT_ROOT, ensure_runtime_dirs
 
-st.set_page_config(page_title="Settings — XPS-Deconv", layout="wide")
 ensure_runtime_dirs()
 init_session_state()
 lang = render_sidebar()
 
 st.header(t("nav_settings", lang))
-st.write(f"Project root: `{PROJECT_ROOT}`")
-st.write(f"Data dir: `{DATA_DIR}`")
-st.write(f"Exports dir: `{EXPORTS_DIR}`")
-st.write(f"Language: **{lang}**")
-st.markdown(
-    "See [docs/DECISIONS.md](../docs/DECISIONS.md) and [docs/AI-deployment/](../docs/AI-deployment/) for architecture."
-)
+st.subheader(t("settings_paths", lang))
+st.write(f"{t('project_root', lang)}: `{PROJECT_ROOT}`")
+st.write(f"{t('data_dir', lang)}: `{DATA_DIR}`")
+st.write(f"{t('exports_dir', lang)}: `{EXPORTS_DIR}`")
+st.write(f"{t('language_label', lang)}: **{'Русский' if lang == 'ru' else 'English'}**")
+if lang == "ru":
+    st.markdown(
+        "Архитектура и решения: `docs/DECISIONS.md` и `docs/AI-deployment/`."
+    )
+else:
+    st.markdown(
+        "See `docs/DECISIONS.md` and `docs/AI-deployment/` for architecture."
+    )

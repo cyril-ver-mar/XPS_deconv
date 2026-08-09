@@ -92,7 +92,20 @@ This kit does **not** invent product rules — ask via `DEPLOY_CHECKLIST.md`.
 ## 5. Optional domain packs
 
 - **Chemistry / RDKit:** `EXAMPLES/chemistry/` (only if checklist G1 = yes)  
+- **Spectroscopy / curve plots:** playbook `11_scientific_plots_ux.md` + rule `scientific-plots.EXAMPLE.mdc` (C6 / G4)  
 - Other domains: add under `EXAMPLES/<name>/` the same way  
+
+---
+
+## 5b. Scientific plot UX (summary)
+
+When C6 = yes, follow playbook 11:
+
+- Shared L5 viewer: plot first, collapsed settings below  
+- Retain axis ranges across invert X and trace toggles  
+- Preview vs Apply for processing steps  
+- Tables + metric cards; no duplicate JSON dumps in UI  
+- Dense workspaces: expanders collapsed by default  
 
 ---
 
@@ -107,6 +120,7 @@ This kit does **not** invent product rules — ask via `DEPLOY_CHECKLIST.md`.
 - [ ] Validate external inputs; log failures; never swallow exceptions  
 - [ ] Update the dated Instruction when structure / public APIs change (if B2 = yes)  
 - [ ] Ask before adopting each playbook principle  
+- [ ] If C6: keep plot view state stable; preview ≠ apply; avoid JSON dumps beside tables  
 
 **Don’t**
 
@@ -115,5 +129,6 @@ This kit does **not** invent product rules — ask via `DEPLOY_CHECKLIST.md`.
 - [ ] Use an untested bleeding-edge Python for stacks that need a pin (e.g. chem → prefer 3.11)  
 - [ ] Treat alternate UI frameworks as primary if the project chose Streamlit  
 - [ ] Store generated preview images in the DB when “depict on review” was chosen  
+- [ ] Reset axis ranges when the user only toggles invert X or show/hide traces  
 
 Chemistry-specific do/don’t extras: `EXAMPLES/chemistry/README.md`.

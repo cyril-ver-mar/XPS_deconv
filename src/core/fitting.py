@@ -190,11 +190,18 @@ def perform_deconvolution(
         ss_res = float(np.sum(residuals**2))
         ss_tot = float(np.sum((y - np.mean(y)) ** 2))
         r_squared = 1.0 - (ss_res / ss_tot) if ss_tot > 0 else 0.0
+        yhat = np.asarray(result.best_fit, dtype=float)
+        if y.size > 1 and np.std(y) > 0 and np.std(yhat) > 0:
+            r_corr = float(np.corrcoef(y, yhat)[0, 1])
+        else:
+            r_corr = 0.0
 
         metrics = {
             "chi_square": float(result.redchi) if result.redchi is not None else None,
             "rmse": rmse,
-            "r_squared": r_squared,
+            "R": r_corr,
+            "R_squared": r_squared,
+            "r_squared": r_squared,  # alias
             "total_area": float(total_area),
             "n_iterations": int(result.nfev),
             "fit_time_s": fit_time,

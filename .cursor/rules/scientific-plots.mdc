@@ -1,0 +1,19 @@
+---
+description: Scientific plot UX — retain view state; plot first; no JSON dumps
+globs:
+  - src/ui/components/**/*.py
+  - pages/**/*.py
+alwaysApply: false
+---
+
+# Scientific plots (Streamlit)
+
+Full playbook: `docs/AI-deployment/TASK_PLAYBOOKS/11_scientific_plots_ux.md`.
+
+- Plot first; put dense controls in a **collapsed** expander below the chart.
+- **Invert X** must not reset axis ranges or trace visibility.
+- Seed axis ranges once (`*_ranges_initialized`); Y bounds from **all** series on fit/reset.
+- Prefer metrics cards + dataframes; do not show raw JSON next to the same data.
+- Preview vs Apply for baseline/denoise-style steps.
+- Parameter ❔ helpers for non-obvious options.
+- Never nest peak/list editors under one-shot `if pending_*` branches.

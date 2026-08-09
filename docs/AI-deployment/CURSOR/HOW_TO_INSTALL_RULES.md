@@ -14,6 +14,7 @@ cp docs/AI-deployment/CURSOR/rules/project-decisions.mdc .cursor/rules/
 # cp .../living-instruction-doc.mdc .cursor/rules/
 # cp .../builds-deferred.EXAMPLE.mdc .cursor/rules/builds-deferred.mdc
 # cp .../chemistry.EXAMPLE.mdc .cursor/rules/chemistry.mdc   # only if chem
+# cp .../scientific-plots.EXAMPLE.mdc .cursor/rules/scientific-plots.mdc  # if C6 / G4
 ```
 
 3. Edit frontmatter / paths if the kit lives somewhere other than `docs/AI-deployment/`.  

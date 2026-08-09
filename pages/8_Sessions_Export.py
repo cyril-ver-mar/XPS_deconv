@@ -19,24 +19,23 @@ from src.ui.session_keys import init_session_state
 from src.utils.i18n import t
 from src.utils.paths import EXPORTS_DIR, ensure_runtime_dirs
 
-st.set_page_config(page_title="Sessions — XPS-Deconv", layout="wide")
 ensure_runtime_dirs()
 init_session_state()
 lang = render_sidebar()
 
 st.header(t("nav_sessions", lang))
 
-st.subheader("Save session")
-name = st.text_input("Session name", value="fit_session")
-notes = st.text_input("Notes", value="")
-if st.button("Save current session", type="primary"):
+st.subheader(t("save_session", lang))
+name = st.text_input(t("session_name", lang), value="fit_session")
+notes = st.text_input(t("notes", lang), value="")
+if st.button(t("save_current_session", lang), type="primary"):
     path = save_session(name, dict(st.session_state), notes=notes)
     st.success(f"Saved {path}")
 
-st.subheader("Load session")
+st.subheader(t("load_session", lang))
 rows = list_sessions()
 if not rows:
-    st.caption("No indexed sessions yet.")
+    st.caption(t("no_sessions", lang))
 else:
     labels = {r["id"]: f"{r['name']} | {r['core_level']} | {r['created_at']}" for r in rows}
     sid = st.selectbox("Indexed sessions", options=list(labels.keys()), format_func=lambda i: labels[i])

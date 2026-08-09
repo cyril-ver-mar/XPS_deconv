@@ -10,11 +10,11 @@ Copy this entire folder to the **root** of a new project. The agent should then 
 |------|---------|
 | `AGENTS.md` | **Start here** — agent workflow after the kit lands in a new repo |
 | `DEPLOY_CHECKLIST.md` | Ask the user which principles to implement |
-| `ARCHITECTURE.md` | General 5-layer Streamlit architecture |
+| `ARCHITECTURE.md` | General 5-layer Streamlit architecture (+ scientific plot UX summary) |
 | `SKILLS_GUIDE.md` | How to use Cursor skills (personal vs project) |
-| `CURSOR/rules/` | Rule templates (general always-on; chemistry as *examples*) |
+| `CURSOR/rules/` | Rule templates (general always-on; chemistry / scientific-plots as *examples*) |
 | `TEMPLATES/` | Short file skeletons (not a full runnable app) |
-| `TASK_PLAYBOOKS/` | How to handle common Streamlit tasks |
+| `TASK_PLAYBOOKS/` | How to handle common Streamlit tasks (incl. scientific plots) |
 | `EXAMPLES/chemistry/` | Domain-specific patterns (optional) |
 
 ## Design choices (this kit)

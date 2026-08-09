@@ -7,17 +7,18 @@ import signal
 
 import streamlit as st
 
-from src.utils.i18n import t
+from src.utils.i18n import DEFAULT_LANG, t
 
 
 def render_sidebar() -> str:
-    lang = st.session_state.get("lang", "en")
+    lang = st.session_state.get("lang", DEFAULT_LANG)
     st.sidebar.title(t("app_title", lang))
+    # Keep radio index in sync with session lang (Russian default)
     choice = st.sidebar.radio(
         t("lang", lang),
-        options=["en", "ru"],
-        format_func=lambda x: "English" if x == "en" else "Русский",
-        index=0 if lang == "en" else 1,
+        options=["ru", "en"],
+        format_func=lambda x: "Русский" if x == "ru" else "English",
+        index=0 if lang == "ru" else 1,
         key="lang_radio",
     )
     st.session_state["lang"] = choice
@@ -26,10 +27,10 @@ def render_sidebar() -> str:
         token = st.session_state.get("cancel_token")
         if token is not None:
             token.cancel()
-            st.sidebar.warning("Cancel requested")
+            st.sidebar.warning(t("cancel_requested", choice))
 
     if st.sidebar.button(t("exit_app", choice)):
-        st.sidebar.write("Stopping…")
+        st.sidebar.write(t("stopping", choice))
         os.kill(os.getpid(), signal.SIGTERM)
 
     return choice
