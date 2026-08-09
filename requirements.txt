@@ -1,0 +1,11 @@
+streamlit>=1.32
+numpy>=1.24
+pandas>=2.0
+matplotlib>=3.7
+scipy>=1.11
+lmfit>=1.2
+olefile>=0.46
+openpyxl>=3.1
+plotly>=5.18
+pytest>=7.4
+pytest-timeout>=2.2
