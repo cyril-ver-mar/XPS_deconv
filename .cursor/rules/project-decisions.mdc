@@ -14,4 +14,5 @@ Plot UX: `docs/AI-deployment/TASK_PLAYBOOKS/11_scientific_plots_ux.md`.
 - Default UI language is **Russian** (EN available in sidebar).
 - Page order: Home → Import → Interactive → analysis pages → Documentation → Settings.
 - Install/run scripts must stay scripts-first with clear, actionable errors.
+- App version: root `VERSION` + git tag `vX.Y.Z` (`src/utils/version.py`).
 - Do not invent product rules — ask.

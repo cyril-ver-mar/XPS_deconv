@@ -5,5 +5,10 @@ secondaryBackgroundColor = "#f5f7fa"
 textColor = "#1a1a1a"
 font = "sans serif"
 
+[browser]
+gatherUsageStats = false
+
 [server]
-headless = true
+# Hide the first-run “Welcome / Email” prompt and skip usage telemetry.
+showEmailPrompt = false
+headless = false

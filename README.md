@@ -2,6 +2,8 @@
 
 Professional Streamlit app for **Thermo Scientific VGD** XPS spectrum deconvolution.
 
+**Version:** see [`VERSION`](VERSION) (current release tagged in git as `vMAJOR.MINOR.PATCH`).
+
 ## Agent / architecture kit
 
 See [docs/AI-deployment/](docs/AI-deployment/) — deploy checklist and Streamlit playbooks.  
@@ -29,6 +31,17 @@ run.bat
 ```
 
 In-app guide: **Documentation** page (also `docs/USER_GUIDE.md` / `docs/USER_GUIDE_ru.md`).
+
+## Standalone distribution
+
+End-user package (no AI/dev kits):
+
+```bash
+python scripts/build_standalone.py
+# → standalone/XPS-Deconv/   zip and share this folder
+```
+
+Recipients only need Python 3.11 + `install` / `run`.
 
 ## Workflow
 
