@@ -11,6 +11,7 @@ Plot UX: `docs/AI-deployment/TASK_PLAYBOOKS/11_scientific_plots_ux.md`.
 - When the user locks a requirement, update DECISIONS (and this rule if it changes how code must be written).
 - Prefer the living architecture guide / playbook 11 over ad-hoc notebook patterns when they conflict.
 - Scientific plots: retain axis ranges on invert; Preview ≠ Apply; tables over JSON dumps; collapsed dense panels; PNG/JPEG/TIFF export (inches + DPI) in Plot settings.
+- Standalone updates: check GitHub Releases on launch; banner + release link; optional confirmed zip install (preserve `data/`/`venv/`); configure via `GITHUB_REPO`.
 - Default UI language is **Russian** (EN available in sidebar).
 - Page order: Home → Import → Interactive → analysis pages → Documentation → Settings.
 - Install/run scripts must stay scripts-first with clear, actionable errors.

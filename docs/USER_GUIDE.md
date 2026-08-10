@@ -131,6 +131,7 @@ Do not commit `venv/`, secrets, or bulky runtime data.
 | Import errors after pull | Re-run install to refresh dependencies |
 | Plot Y range wrong after fit | Use **Fit all data in view** under Plot settings |
 | Need publication figure | **Plot settings → Export graph**: PNG / JPEG / TIFF, inches + DPI |
+| Update available banner | Configure `GITHUB_REPO`; attach `XPS-Deconv-standalone-*.zip` to the GitHub Release |
 
 ---
 

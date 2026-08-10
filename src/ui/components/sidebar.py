@@ -7,6 +7,7 @@ import signal
 
 import streamlit as st
 
+from src.ui.components.update_banner import render_update_banner
 from src.utils.i18n import DEFAULT_LANG, t
 from src.utils.version import get_version
 
@@ -35,4 +36,6 @@ def render_sidebar() -> str:
         st.sidebar.write(t("stopping", choice))
         os.kill(os.getpid(), signal.SIGTERM)
 
+    # Once per launch: network check; banner only if newer release exists
+    render_update_banner(choice)
     return choice

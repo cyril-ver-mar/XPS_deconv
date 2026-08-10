@@ -56,3 +56,4 @@ Use ❔ helpers next to parameters.
 | No venv | Run install first |
 | Port 8501 busy | Stop other Streamlit |
 | Browser did not open | Open http://localhost:8501 manually |
+| Update available | Banner on launch; or Settings → Updates |

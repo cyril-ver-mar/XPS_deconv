@@ -34,7 +34,7 @@ src/
   db/      sessions_repo
   services/ import, analysis, session, peak_library, project_service
   ui/      session_keys, project_state, components/
-           (plots, spectrum_viewer, plot_export, help, baseline_demos, sidebar)
+           (plots, spectrum_viewer, plot_export, update_banner, help, baseline_demos, sidebar)
 docs/      DECISIONS.md, ARCHITECTURE.md, AI-deployment/
 Legacy/    Instruction snapshots
 data/      projects/, sessions/, peak_library.json (runtime, gitignored)

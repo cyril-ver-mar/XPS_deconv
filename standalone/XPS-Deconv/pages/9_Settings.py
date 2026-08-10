@@ -12,6 +12,7 @@ if str(ROOT) not in sys.path:
 import streamlit as st
 
 from src.ui.components.sidebar import render_sidebar
+from src.ui.components.update_banner import render_update_settings
 from src.ui.session_keys import init_session_state
 from src.utils.i18n import t
 from src.utils.paths import DATA_DIR, EXPORTS_DIR, ROOT as PROJECT_ROOT, ensure_runtime_dirs
@@ -32,3 +33,5 @@ if lang == "ru":
     st.caption("Пути вычисляются относительно папки приложения (без жёстко прошитых абсолютных адресов).")
 else:
     st.caption("Paths are resolved relative to the app folder (no hardcoded machine paths).")
+
+render_update_settings(lang)

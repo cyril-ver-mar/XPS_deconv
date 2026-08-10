@@ -2,7 +2,8 @@
 
 Professional Streamlit app for **Thermo Scientific VGD** XPS spectrum deconvolution.
 
-**Version:** see [`VERSION`](VERSION) (current release tagged in git as `vMAJOR.MINOR.PATCH`).
+**Version:** see [`VERSION`](VERSION) (current release tagged in git as `vMAJOR.MINOR.PATCH`).  
+**Changelog:** [`CHANGELOG.md`](CHANGELOG.md).
 
 ## Agent / architecture kit
 

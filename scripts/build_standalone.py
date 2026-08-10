@@ -31,6 +31,8 @@ COPY_FILES = [
     "run.bat",
     ".gitignore",
     "VERSION",
+    "CHANGELOG.md",
+    "GITHUB_REPO.example",
 ]
 
 SKIP_NAME_PARTS = {
@@ -132,6 +134,7 @@ run.bat
 | Нет venv | Сначала install.sh / install.bat |
 | Порт 8501 занят | Закройте другой Streamlit |
 | Браузер не открылся | Откройте http://localhost:8501 вручную |
+| Есть обновление | Баннер на главной; или Настройки → Обновления |
 """
 
 USER_GUIDE_EN = """# XPS-Deconv — User guide
@@ -192,6 +195,7 @@ Use ❔ helpers next to parameters.
 | No venv | Run install first |
 | Port 8501 busy | Stop other Streamlit |
 | Browser did not open | Open http://localhost:8501 manually |
+| Update available | Banner on launch; or Settings → Updates |
 """
 
 
@@ -237,6 +241,11 @@ def main() -> None:
         if not src.exists():
             raise SystemExit(f"Missing required file: {rel}")
         shutil.copy2(src, OUT / rel)
+
+    # Optional: bake release-check repo id into the distributable
+    github_repo = ROOT / "GITHUB_REPO"
+    if github_repo.is_file():
+        shutil.copy2(github_repo, OUT / "GITHUB_REPO")
 
     # Slim requirements for end users (no test tooling)
     req_lines = [

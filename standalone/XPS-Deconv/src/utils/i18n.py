@@ -111,6 +111,24 @@ STRINGS: Dict[str, Dict[str, str]] = {
     "y_min": {"en": "Y min", "ru": "Y мин"},
     "y_max": {"en": "Y max", "ru": "Y макс"},
     "empty_spectrum": {"en": "Empty spectrum — nothing to plot.", "ru": "Пустой спектр — нечего рисовать."},
+    "export_graph": {"en": "Export graph", "ru": "Экспорт графика"},
+    "export_graph_help": {
+        "en": "Raster export for papers/slides. Size in inches × DPI → pixel resolution.",
+        "ru": "Растровый экспорт для статей/слайдов. Размер в дюймах × DPI → разрешение в пикселях.",
+    },
+    "export_format": {"en": "Format", "ru": "Формат"},
+    "export_width_in": {"en": "Width (in)", "ru": "Ширина (дюйм)"},
+    "export_height_in": {"en": "Height (in)", "ru": "Высота (дюйм)"},
+    "export_dpi": {"en": "DPI (resolution)", "ru": "DPI (разрешение)"},
+    "export_jpeg_quality": {"en": "JPEG quality", "ru": "Качество JPEG"},
+    "export_pixels_hint": {
+        "en": "Output size: {w} × {h} px at {dpi} DPI",
+        "ru": "Размер файла: {w} × {h} пикс. при {dpi} DPI",
+    },
+    "export_prepare": {"en": "Prepare image", "ru": "Подготовить изображение"},
+    "export_download": {"en": "Download image", "ru": "Скачать изображение"},
+    "export_ready": {"en": "Ready ({n} bytes). Click Download.", "ru": "Готово ({n} байт). Нажмите «Скачать»."},
+    "export_failed": {"en": "Export failed: {err}", "ru": "Ошибка экспорта: {err}"},
     # Peak library
     "peak_lib_caption": {
         "en": "Edit peak types (core levels) and peaks (name + BE). Restore defaults anytime.",
@@ -226,6 +244,55 @@ STRINGS: Dict[str, Dict[str, str]] = {
     "load_session": {"en": "Load session", "ru": "Загрузить сессию"},
     "no_sessions": {"en": "No indexed sessions yet.", "ru": "Пока нет сессий в индексе."},
     "export": {"en": "Export", "ru": "Экспорт"},
+    # GitHub updates
+    "update_available": {
+        "en": "**{new}** is available (you have {old}).",
+        "ru": "Доступна версия **{new}** (у вас {old}).",
+    },
+    "update_open_release": {"en": "Open release on GitHub", "ru": "Открыть релиз на GitHub"},
+    "update_install_expander": {
+        "en": "Download & install update",
+        "ru": "Скачать и установить обновление",
+    },
+    "update_install_help": {
+        "en": "Replaces app files from the release zip. Keeps your data/, exports/, and venv/. Restart the app afterward; re-run install if dependencies changed.",
+        "ru": "Заменяет файлы приложения из zip-релиза. Сохраняет data/, exports/ и venv/. После этого перезапустите приложение; при смене зависимостей снова запустите install.",
+    },
+    "update_confirm": {
+        "en": "I understand app files will be overwritten (projects/data kept).",
+        "ru": "Понимаю: файлы приложения будут перезаписаны (проекты/данные сохранятся).",
+    },
+    "update_download_install": {
+        "en": "Download & install now",
+        "ru": "Скачать и установить сейчас",
+    },
+    "update_working": {"en": "Downloading and installing…", "ru": "Скачивание и установка…"},
+    "update_installed": {
+        "en": "Update installed. Please stop and restart the app.",
+        "ru": "Обновление установлено. Остановите и перезапустите приложение.",
+    },
+    "update_restart_hint": {
+        "en": "Use Stop server in the sidebar, then run again.",
+        "ru": "Нажмите «Остановить сервер» в боковой панели, затем запустите снова.",
+    },
+    "update_failed": {"en": "Update failed: {err}", "ru": "Ошибка обновления: {err}"},
+    "update_no_zip": {
+        "en": "This release has no standalone .zip asset — open the release page and download manually.",
+        "ru": "У этого релиза нет standalone .zip — откройте страницу релиза и скачайте вручную.",
+    },
+    "update_dismiss": {"en": "Dismiss", "ru": "Скрыть"},
+    "update_section": {"en": "Updates", "ru": "Обновления"},
+    "update_not_configured": {
+        "en": "GitHub repo not set. Put `owner/name` in the `GITHUB_REPO` file (or set XPS_DECONV_GITHUB_REPO).",
+        "ru": "Репозиторий GitHub не задан. Укажите `owner/name` в файле `GITHUB_REPO` (или переменной XPS_DECONV_GITHUB_REPO).",
+    },
+    "update_repo": {"en": "Repository: `{repo}`", "ru": "Репозиторий: `{repo}`"},
+    "update_local_remote": {
+        "en": "Local: **{local}** · Latest on GitHub: **{remote}**",
+        "ru": "Локально: **{local}** · На GitHub: **{remote}**",
+    },
+    "update_up_to_date": {"en": "You are on the latest release.", "ru": "У вас последняя версия."},
+    "update_check_now": {"en": "Check for updates now", "ru": "Проверить обновления сейчас"},
 }
 
 
