@@ -7,34 +7,71 @@ $Repo = "cyril-ver-mar/XPS_deconv"
 if ($env:XPS_DECONV_GITHUB_REPO) { $Repo = $env:XPS_DECONV_GITHUB_REPO }
 
 $AppDirName = "XPS-Deconv"
-# Prefer install dir from the .bat launcher (script may run from %TEMP%).
-if ($env:XPS_DECONV_INSTALL_DIR -and $env:XPS_DECONV_INSTALL_DIR.Trim().Length -gt 0) {
-    $ScriptDir = $env:XPS_DECONV_INSTALL_DIR.Trim().TrimEnd("\", "/")
-} elseif ($args.Count -ge 1 -and $args[0]) {
-    $ScriptDir = ([string]$args[0]).Trim().TrimEnd("\", "/")
-} elseif ($PSScriptRoot) {
-    $ScriptDir = $PSScriptRoot
-} else {
-    $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-}
 $Preserve = @("data", "exports", "venv", ".venv")
+$ScriptArgs = @($args)
 
 function Write-Info([string]$Msg) { Write-Host $Msg }
+
+function Get-SuggestedInstallDir {
+    $candidates = @()
+    if ($env:XPS_DECONV_SUGGESTED_DIR) { $candidates += $env:XPS_DECONV_SUGGESTED_DIR }
+    if ($env:XPS_DECONV_INSTALL_DIR) { $candidates += $env:XPS_DECONV_INSTALL_DIR }
+    if ($ScriptArgs.Count -ge 1 -and $ScriptArgs[0]) { $candidates += [string]$ScriptArgs[0] }
+    try { $candidates += (Get-Location).Path } catch { }
+    if ($env:USERPROFILE) { $candidates += (Join-Path $env:USERPROFILE "XPS_deconv") }
+
+    foreach ($c in $candidates) {
+        if (-not $c) { continue }
+        $p = $c.Trim().TrimEnd("\", "/")
+        if ($p.Length -lt 2) { continue }
+        # Never suggest Temp as the install root
+        if ($p -match '(?i)[\\/]Temp($|[\\/])' -or $p -match '(?i)\\AppData\\Local\\Temp') { continue }
+        return $p
+    }
+    return (Join-Path $env:USERPROFILE "XPS_deconv")
+}
 
 Write-Info ""
 Write-Info "  ============================================================"
 Write-Info "    XPS-Deconv - Bootstrap (download latest from GitHub)"
 Write-Info "  ============================================================"
 Write-Info ""
-Write-Info "  WARNING"
-Write-Info ""
-Write-Info "  This script will download and install XPS-Deconv"
-Write-Info "  INTO THE FOLDER WHERE install_xps_deconv.bat IS LOCATED:"
-Write-Info ("    " + $ScriptDir)
-Write-Info ""
-Write-Info ("  Creates/updates folder: " + $AppDirName)
+Write-Info "  Choose install folder."
+Write-Info ("  App will be created as:  <folder>\" + $AppDirName)
 Write-Info "  Keeps if present: data, exports, venv"
-Write-Info "  Needs network now; Python 3.11 later for install.bat"
+Write-Info ""
+
+$Suggested = Get-SuggestedInstallDir
+Write-Info ("  Default: " + $Suggested)
+$Entered = Read-Host "  Install folder path (Enter = default)"
+if (-not $Entered -or $Entered.Trim().Length -eq 0) {
+    $ScriptDir = $Suggested
+} else {
+    $ScriptDir = $Entered.Trim().TrimEnd("\", "/")
+}
+
+# Resolve relative paths against current location
+if (-not [System.IO.Path]::IsPathRooted($ScriptDir)) {
+    $ScriptDir = Join-Path (Get-Location).Path $ScriptDir
+}
+try {
+    $ScriptDir = [System.IO.Path]::GetFullPath($ScriptDir)
+} catch {
+    Write-Info ("  ERROR: bad path: " + $ScriptDir)
+    exit 1
+}
+
+if ($ScriptDir -match '(?i)[\\/]Temp($|[\\/])' -or $ScriptDir -match '(?i)\\AppData\\Local\\Temp') {
+    Write-Info ""
+    Write-Info "  ERROR: Temp folder is not allowed as install path."
+    Write-Info "  Example: D:\Programing\XPS_deconv"
+    exit 1
+}
+
+Write-Info ""
+Write-Info "  WARNING"
+Write-Info ("  Will install into: " + $ScriptDir)
+Write-Info ("  App folder:        " + (Join-Path $ScriptDir $AppDirName))
 Write-Info ""
 
 $Confirm = Read-Host "  Type YES to continue (anything else cancels)"
@@ -43,6 +80,11 @@ if ($Confirm -ne "YES") {
     Write-Info "  Cancelled."
     Write-Info ""
     exit 0
+}
+
+if (-not (Test-Path $ScriptDir)) {
+    New-Item -ItemType Directory -Path $ScriptDir -Force | Out-Null
+    Write-Info ("  OK Created folder " + $ScriptDir)
 }
 
 $Headers = @{

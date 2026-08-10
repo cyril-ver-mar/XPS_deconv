@@ -7,8 +7,8 @@ REPO="${XPS_DECONV_GITHUB_REPO:-cyril-ver-mar/XPS_deconv}"
 APP_DIR_NAME="XPS-Deconv"
 PRESERVE=("data" "exports" "venv" ".venv")
 
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-cd "$SCRIPT_DIR"
+# Stay in the caller's working directory (used as default install path)
+START_CWD="$(pwd)"
 
 # --- colors --------------------------------------------------------------
 if [[ -t 1 ]] && [[ "${NO_COLOR:-}" == "" ]]; then
@@ -49,16 +49,40 @@ EOF
 
 banner
 
+# Ask for install directory (do not silently use script location)
+DEFAULT_DIR="$START_CWD"
+echo
+printf '%s%sInstall folder%s\n' "$C_WARN" "$C_BOLD" "$C_RESET"
+echo "  App will be created as:  <folder>/${APP_DIR_NAME}"
+echo "  Default (current directory):"
+printf '  %s%s%s\n' "$C_BOLD" "$DEFAULT_DIR" "$C_RESET"
+echo
+printf '  Enter path (or press Enter for default): '
+read -r ENTERED_DIR
+if [[ -z "${ENTERED_DIR}" ]]; then
+  SCRIPT_DIR="$DEFAULT_DIR"
+else
+  SCRIPT_DIR="$ENTERED_DIR"
+fi
+# Expand ~
+SCRIPT_DIR="${SCRIPT_DIR/#\~/$HOME}"
+SCRIPT_DIR="$(cd "$SCRIPT_DIR" 2>/dev/null && pwd)" || {
+  mkdir -p "$ENTERED_DIR" 2>/dev/null || true
+  SCRIPT_DIR="$(cd "${ENTERED_DIR/#\~/$HOME}" && pwd)" || fail "Cannot use install path: ${ENTERED_DIR}"
+}
+case "$SCRIPT_DIR" in
+  /tmp|/*/Temp|/*/temp)
+    fail "Temp folder is not allowed as install path" "Choose a normal folder, e.g. ~/XPS_deconv"
+    ;;
+esac
+
 echo
 printf '%s%sWARNING / ПРЕДУПРЕЖДЕНИЕ%s\n' "$C_WARN" "$C_BOLD" "$C_RESET"
 echo
-echo "  This script will download and install XPS-Deconv"
-echo "  INTO THE FOLDER WHERE THIS SCRIPT IS LOCATED:"
+echo "  This script will download and install XPS-Deconv into:"
 printf '  %s%s%s\n' "$C_BOLD" "$SCRIPT_DIR" "$C_RESET"
-echo
-echo "  Этот скрипт скачает и установит XPS-Deconv"
-echo "  В ТУ ЖЕ ПАПКУ, ГДЕ ЛЕЖИТ ЭТОТ ФАЙЛ:"
-printf '  %s%s%s\n' "$C_BOLD" "$SCRIPT_DIR" "$C_RESET"
+echo "  App folder:"
+printf '  %s%s/%s%s\n' "$C_BOLD" "$SCRIPT_DIR" "$APP_DIR_NAME" "$C_RESET"
 echo
 echo "  • Creates / updates:  ${APP_DIR_NAME}/"
 echo "  • Keeps (if present):  data/, exports/, venv/"
@@ -68,11 +92,13 @@ printf '  Type %sYES%s to continue (anything else cancels): ' "$C_BOLD" "$C_RESE
 read -r CONFIRM
 if [[ "$CONFIRM" != "YES" ]]; then
   echo
-  echo "  Cancelled. Move this .sh to the folder where you want the app, then run again."
-  echo "  Отменено. Переложите .sh в нужную папку и запустите снова."
+  echo "  Cancelled."
   echo
   exit 0
 fi
+
+mkdir -p "$SCRIPT_DIR"
+cd "$SCRIPT_DIR"
 
 need_cmd() {
   command -v "$1" >/dev/null 2>&1 || fail "Missing command: $1" "Install it, then re-run this script"

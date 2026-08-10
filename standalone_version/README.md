@@ -36,19 +36,21 @@ Repo: `cyril-ver-mar/XPS_deconv` (override with env `XPS_DECONV_GITHUB_REPO`).
 
 ## Windows
 
-1. Download **only** `install_xps_deconv.bat` into the folder where you want the app  
-2. In PowerShell:
+1. Download **only** `install_xps_deconv.bat`  
+2. Run:
    ```powershell
    .\install_xps_deconv.bat
    ```
-   The `.bat` downloads the latest installer script from GitHub and runs it with ExecutionPolicy Bypass (so you are not blocked by “сценарии отключены”).  
-3. Type `YES` when asked  
-4. Then:
+3. When asked, enter the install folder (or press Enter for the suggested default), e.g. `D:\Programing\XPS_deconv`  
+4. Type `YES`  
+5. Then:
    ```bat
    cd XPS-Deconv
    install.bat
    run.bat
    ```
+
+Temp folders are rejected on purpose.
 
 Browser: http://localhost:8501
 

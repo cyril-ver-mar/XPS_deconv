@@ -1,10 +1,9 @@
 @echo off
 setlocal EnableExtensions
 REM XPS-Deconv Windows bootstrap (ONE file is enough).
-REM Always downloads the latest install_xps_deconv.ps1 from GitHub master,
-REM then runs it with ExecutionPolicy Bypass.
+REM Downloads latest install_xps_deconv.ps1 from GitHub and runs it.
+REM The PowerShell script ASKS for the install folder path.
 REM
-REM Install target = folder containing THIS .bat (not %%TEMP%%).
 REM Usage:
 REM   .\install_xps_deconv.bat
 
@@ -14,17 +13,19 @@ if errorlevel 1 (
   exit /b 1
 )
 
-REM Folder where the .bat lives (trailing backslash stripped for PowerShell)
-set "INSTALL_DIR=%~dp0"
-if "%INSTALL_DIR:~-1%"=="\" set "INSTALL_DIR=%INSTALL_DIR:~0,-1%"
-set "XPS_DECONV_INSTALL_DIR=%INSTALL_DIR%"
+REM Suggested default = current working directory (where you ran the command)
+set "XPS_DECONV_SUGGESTED_DIR=%CD%"
+REM Also remember bat location as a second hint
+set "BAT_DIR=%~dp0"
+if "%BAT_DIR:~-1%"=="\" set "BAT_DIR=%BAT_DIR:~0,-1%"
+set "XPS_DECONV_INSTALL_DIR=%BAT_DIR%"
 
 set "PS1=%TEMP%\xps_deconv_install_fresh.ps1"
 set "RAW=https://raw.githubusercontent.com/cyril-ver-mar/XPS_deconv/master/standalone_version/install_xps_deconv.ps1"
 
 echo.
 echo   XPS-Deconv bootstrap launcher
-echo   Install into: %INSTALL_DIR%
+echo   Suggested folder: %XPS_DECONV_SUGGESTED_DIR%
 echo   Downloading latest installer script from GitHub...
 powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -Command ^
   "try { $u='%RAW%?t=' + [guid]::NewGuid().ToString(); Invoke-WebRequest -UseBasicParsing -Uri $u -OutFile '%PS1%'; if (-not (Test-Path '%PS1%')) { exit 1 }; exit 0 } catch { Write-Host $_.Exception.Message; exit 1 }"
@@ -42,7 +43,7 @@ if errorlevel 1 (
 
 echo   Running installer...
 echo.
-powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File "%PS1%" "%INSTALL_DIR%"
+powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File "%PS1%"
 set "ERR=%ERRORLEVEL%"
 del "%PS1%" >nul 2>&1
 exit /b %ERR%
