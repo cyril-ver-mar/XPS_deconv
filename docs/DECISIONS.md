@@ -2,19 +2,20 @@
 
 **App display name:** XPS-Deconv  
 **Last updated:** 2026-08-10  
-**Version:** see root `VERSION` (semver). Git tags: `vMAJOR.MINOR.PATCH` (e.g. `v1.0.3`).
+**Version:** see root `VERSION` (semver). Git tags: `vMAJOR.MINOR.PATCH` (e.g. `v1.0.4`).
 
 ## Versioning (locked)
 
 | Piece | Rule |
 |-------|------|
-| Source of truth | Root file `VERSION` (one line, e.g. `1.0.3`) |
-| Git tag | `v` + same number (`v1.0.3`) |
+| Source of truth | Root file `VERSION` (one line, e.g. `1.0.4`) |
+| Git tag | `v` + same number (`v1.0.4`) |
 | Code | `src/utils/version.py` → `get_version()` / `version_label()` |
 | UI | Settings page shows the version |
 | Bump | PATCH = fixes/polish; MINOR = features; MAJOR = breaking |
 | Standalone | Rebuild with `python scripts/build_standalone.py` after a release bump; zip via `scripts/pack_standalone_release.py` and attach to the GitHub Release |
 | Update check | `GITHUB_REPO` (`owner/name`) or env `XPS_DECONV_GITHUB_REPO`; public Releases API |
+| End-user install | Prefer `standalone_version/install_xps_deconv.{sh,bat,ps1}` — downloads latest release zip into the script’s folder (confirm `YES`); then `XPS-Deconv/install` + `run` |
 
 ## Locked
 
@@ -34,6 +35,7 @@
 | Plot UX | Plot first; settings accordion collapsed below; invert X retains ranges; Y fit uses all series |
 | Plot export | Plot settings → PNG / JPEG / TIFF; size in inches + DPI (Kaleido + Pillow) |
 | Standalone updates | On launch: check GitHub Releases; banner if newer; optional zip install (keeps `data/` / `venv/`); asset `XPS-Deconv-standalone-{ver}.zip` |
+| Bootstrap install | `standalone_version/` one-file installer → latest Release into script folder (YES confirm) |
 | Results UI | Metric cards + dataframes only — no raw JSON dumps next to tables |
 | Peak library UI | `st.data_editor` table; add/delete core levels; restore defaults |
 | Page order | Home → Import → Interactive → analysis → Documentation → Settings |

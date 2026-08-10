@@ -33,16 +33,20 @@ run.bat
 
 In-app guide: **Documentation** page (also `docs/USER_GUIDE.md` / `docs/USER_GUIDE_ru.md`).
 
-## Standalone distribution
+## Standalone distribution (end users)
 
-End-user package (no AI/dev kits):
+**Preferred:** give users only the bootstrapper from [`standalone_version/`](standalone_version/)  
+(`install_xps_deconv.sh` or `.bat`+`.ps1`). It downloads the latest GitHub Release zip into the folder where the script is run (after typing `YES`).
+
+Maintainer release assets:
 
 ```bash
 python scripts/build_standalone.py
-# → standalone/XPS-Deconv/   zip and share this folder
+python scripts/pack_standalone_release.py
+# → dist/XPS-Deconv-standalone-{VERSION}.zip  (attach to GitHub Release)
 ```
 
-Recipients only need Python 3.11 + `install` / `run`.
+Optional: still zip `standalone/XPS-Deconv/` manually if needed. Recipients need Python 3.11 for `install` / `run` after bootstrap.
 
 ## Workflow
 

@@ -37,6 +37,8 @@ src/
            (plots, spectrum_viewer, plot_export, update_banner, help, baseline_demos, sidebar)
 docs/      DECISIONS.md, ARCHITECTURE.md, AI-deployment/
 Legacy/    Instruction snapshots
+standalone/          built end-user tree (build_standalone.py)
+standalone_version/  one-file GitHub bootstrapper (sh / bat+ps1)
 data/      projects/, sessions/, peak_library.json (runtime, gitignored)
 exports/
 tests/

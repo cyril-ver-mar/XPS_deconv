@@ -3,6 +3,11 @@
 All notable changes to **XPS-Deconv** are listed here.  
 Version source of truth: root [`VERSION`](VERSION). Git tags: `vMAJOR.MINOR.PATCH`.
 
+## [1.0.4] — 2026-08-10
+
+### Added
+- **One-file bootstrapper** in `standalone_version/` (`install_xps_deconv.sh` / `.bat`+`.ps1`): downloads latest GitHub Release zip into the script’s folder after typing `YES`, then tips for `install` / `run`.
+
 ## [1.0.3] — 2026-08-10
 
 ### Added
