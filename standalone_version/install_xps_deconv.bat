@@ -20,7 +20,7 @@ echo.
 echo   XPS-Deconv bootstrap launcher
 echo   Downloading latest installer script from GitHub...
 powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -Command ^
-  "try { Invoke-WebRequest -UseBasicParsing -Uri '%RAW%' -OutFile '%PS1%'; if (-not (Test-Path '%PS1%')) { exit 1 }; exit 0 } catch { Write-Host $_.Exception.Message; exit 1 }"
+  "try { $u='%RAW%?t=' + [guid]::NewGuid().ToString(); Invoke-WebRequest -UseBasicParsing -Uri $u -OutFile '%PS1%'; if (-not (Test-Path '%PS1%')) { exit 1 }; exit 0 } catch { Write-Host $_.Exception.Message; exit 1 }"
 if errorlevel 1 (
   echo.
   echo   Download from GitHub failed.
