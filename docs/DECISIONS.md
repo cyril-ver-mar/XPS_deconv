@@ -2,14 +2,14 @@
 
 **App display name:** XPS-Deconv  
 **Last updated:** 2026-08-10  
-**Version:** see root `VERSION` (semver). Git tags: `vMAJOR.MINOR.PATCH` (e.g. `v1.0.4`).
+**Version:** see root `VERSION` (semver). Git tags: `vMAJOR.MINOR.PATCH` (e.g. `v1.0.5`).
 
 ## Versioning (locked)
 
 | Piece | Rule |
 |-------|------|
-| Source of truth | Root file `VERSION` (one line, e.g. `1.0.4`) |
-| Git tag | `v` + same number (`v1.0.4`) |
+| Source of truth | Root file `VERSION` (one line, e.g. `1.0.5`) |
+| Git tag | `v` + same number (`v1.0.5`) |
 | Code | `src/utils/version.py` → `get_version()` / `version_label()` |
 | UI | Settings page shows the version |
 | Bump | PATCH = fixes/polish; MINOR = features; MAJOR = breaking |

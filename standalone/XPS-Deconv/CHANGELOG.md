@@ -3,6 +3,13 @@
 All notable changes to **XPS-Deconv** are listed here.  
 Version source of truth: root [`VERSION`](VERSION). Git tags: `vMAJOR.MINOR.PATCH`.
 
+## [1.0.5] — 2026-08-10
+
+### Added
+- **4d-metal peak library** defaults: Y3d, Zr3d, Nb3d, Mo3d, Tc3d, Ru3d, Rh3d, Pd3d, Cd3d (metal + common oxides); Ag3d oxide states expanded.
+- Matching **region presets** for those 3d windows.
+- Bootstrapper asks for install folder path (rejects Temp).
+
 ## [1.0.4] — 2026-08-10
 
 ### Added

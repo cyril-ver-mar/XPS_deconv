@@ -133,6 +133,7 @@ Do not commit `venv/`, secrets, or bulky runtime data.
 | Need publication figure | **Plot settings → Export graph**: PNG / JPEG / TIFF, inches + DPI |
 | Update available banner | Configure `GITHUB_REPO`; attach `XPS-Deconv-standalone-*.zip` to the GitHub Release |
 | First-time install (no full folder copy) | Run `standalone_version/install_xps_deconv.sh` (or `.bat`) in the target folder; type `YES` |
+| New built-in peaks missing in UI | Peak library → **Restore entire library to defaults** (or delete `data/peak_library.json`) |
 
 ---
 

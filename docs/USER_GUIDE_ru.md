@@ -132,6 +132,7 @@ pages / ui  →  services  →  db  →  core  →  utils
 | Нужна картинка для статьи | **Настройки графика → Экспорт**: PNG / JPEG / TIFF, дюймы + DPI |
 | Баннер обновления | Файл `GITHUB_REPO`; к релизу на GitHub прикрепить `XPS-Deconv-standalone-*.zip` |
 | Первая установка (без копирования всего проекта) | Запустить `standalone_version/install_xps_deconv.sh` (или `.bat`) в нужной папке; ввести `YES` |
+| Нет новых встроенных пиков в UI | Библиотека пиков → **Восстановить всю библиотеку** (или удалить `data/peak_library.json`) |
 
 ---
 
