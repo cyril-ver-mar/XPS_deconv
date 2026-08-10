@@ -7,7 +7,16 @@ $Repo = "cyril-ver-mar/XPS_deconv"
 if ($env:XPS_DECONV_GITHUB_REPO) { $Repo = $env:XPS_DECONV_GITHUB_REPO }
 
 $AppDirName = "XPS-Deconv"
-if ($PSScriptRoot) { $ScriptDir = $PSScriptRoot } else { $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path }
+# Prefer install dir from the .bat launcher (script may run from %TEMP%).
+if ($env:XPS_DECONV_INSTALL_DIR -and $env:XPS_DECONV_INSTALL_DIR.Trim().Length -gt 0) {
+    $ScriptDir = $env:XPS_DECONV_INSTALL_DIR.Trim().TrimEnd("\", "/")
+} elseif ($args.Count -ge 1 -and $args[0]) {
+    $ScriptDir = ([string]$args[0]).Trim().TrimEnd("\", "/")
+} elseif ($PSScriptRoot) {
+    $ScriptDir = $PSScriptRoot
+} else {
+    $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+}
 $Preserve = @("data", "exports", "venv", ".venv")
 
 function Write-Info([string]$Msg) { Write-Host $Msg }
@@ -20,7 +29,7 @@ Write-Info ""
 Write-Info "  WARNING"
 Write-Info ""
 Write-Info "  This script will download and install XPS-Deconv"
-Write-Info "  INTO THE FOLDER WHERE THIS SCRIPT IS LOCATED:"
+Write-Info "  INTO THE FOLDER WHERE install_xps_deconv.bat IS LOCATED:"
 Write-Info ("    " + $ScriptDir)
 Write-Info ""
 Write-Info ("  Creates/updates folder: " + $AppDirName)
