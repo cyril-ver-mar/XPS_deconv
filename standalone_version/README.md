@@ -37,7 +37,15 @@ Repo: `cyril-ver-mar/XPS_deconv` (override with env `XPS_DECONV_GITHUB_REPO`).
 ## Windows
 
 1. Put `install_xps_deconv.bat` **and** `install_xps_deconv.ps1` in the target folder  
-2. Double-click `install_xps_deconv.bat` (or run it from cmd)  
+2. Open **cmd** or PowerShell in that folder and run **with** `.\` :
+   ```bat
+   .\install_xps_deconv.bat
+   ```
+   Or double-click `install_xps_deconv.bat` in Explorer.  
+   Do **not** type only `install_xps_deconv.ps1` — PowerShell needs:
+   ```powershell
+   .\install_xps_deconv.ps1
+   ```
 3. Type `YES`  
 4. Then in cmd:
    ```bat

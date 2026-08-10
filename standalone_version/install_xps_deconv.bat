@@ -1,6 +1,8 @@
 @echo off
 setlocal EnableExtensions
 REM Thin launcher — real logic is in install_xps_deconv.ps1 (same folder).
+REM From PowerShell use:  .\install_xps_deconv.bat
+REM From cmd use:         install_xps_deconv.bat   or   .\install_xps_deconv.bat
 
 set "SCRIPT_DIR=%~dp0"
 set "PS1=%SCRIPT_DIR%install_xps_deconv.ps1"

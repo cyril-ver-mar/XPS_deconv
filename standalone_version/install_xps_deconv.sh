@@ -192,7 +192,7 @@ fi
 echo
 printf '%s[4/4]%s Next steps\n' "$C_ACCENT" "$C_RESET"
 echo
-printf '%sHow to finish setup & run%s\n' "$C_BOLD" "$C_RESET"
+printf '%sHow to finish setup and run%s\n' "$C_BOLD" "$C_RESET"
 echo
 echo "  1. Open Terminal"
 echo "  2. Go to the app folder:"

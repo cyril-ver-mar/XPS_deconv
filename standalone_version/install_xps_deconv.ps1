@@ -137,7 +137,7 @@ try {
     Write-Host ""
     Write-Host "  [4/4] Next steps"
     Write-Host ""
-    Write-Host "  How to finish setup & run"
+    Write-Host "  How to finish setup and run"
     Write-Host ""
     Write-Host "  1. Open Command Prompt or PowerShell"
     Write-Host "  2. Go to the app folder:"
