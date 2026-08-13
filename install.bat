@@ -145,7 +145,8 @@ echo %C_ACCENT%[5/6]%C_RESET% %C_BOLD%Create data folders ^& smoke-test imports%
 if not exist data\projects mkdir data\projects
 if not exist data\sessions mkdir data\sessions
 if not exist exports mkdir exports
-python -c "import streamlit,numpy,pandas,scipy,lmfit,plotly,olefile; print('ok')"
+set "PYTHONPATH=%CD%"
+python -m src.utils.deps_check
 if errorlevel 1 (
   echo.
   echo %C_ERR%+-- Error ------------------------------------------+%C_RESET%
@@ -154,10 +155,11 @@ if errorlevel 1 (
   echo.
   echo %C_BOLD%How to fix%C_RESET%
   echo   %C_ACCENT%·%C_RESET% Re-run install.bat after fixing pip errors
+  echo   %C_ACCENT%·%C_RESET% Or: venv\Scripts\activate ^&^& pip install -r requirements.txt
   echo.
   exit /b 1
 )
-echo   %C_OK%✓%C_RESET% streamlit, numpy, lmfit, plotly, ... import OK
+echo   %C_OK%✓%C_RESET% All runtime packages import OK (incl. kaleido, pillow, ...)
 echo   %C_OK%✓%C_RESET% Folders: data\projects, data\sessions, exports
 
 echo %C_ACCENT%[6/6]%C_RESET% %C_BOLD%Finish%C_RESET%

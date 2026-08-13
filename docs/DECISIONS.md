@@ -34,13 +34,15 @@
 | Fit UX | Trace toggles, fill colors/alpha, R & R² & RMSE, fit sequence compare, interactive workspace |
 | Plot UX | Plot first; settings accordion collapsed below; invert X retains ranges; Y fit uses all series |
 | Plot export | Plot settings → PNG / JPEG / TIFF; size in inches + DPI (Kaleido + Pillow) |
-| Standalone updates | On launch: check GitHub Releases; banner if newer; optional zip install (keeps `data/` / `venv/`); asset `XPS-Deconv-standalone-{ver}.zip` |
+| GitHub repo | `cyril-ver-mar/XPS_deconv` — **public** |
+| Update telemetry | Deferred — no per-device / time logging for now |
 | Bootstrap install | `standalone_version/` one-file installer → latest Release into script folder (YES confirm) |
 | Results UI | Metric cards + dataframes only — no raw JSON dumps next to tables |
 | Peak library UI | `st.data_editor` table; add/delete core levels; restore defaults |
 | Page order | Home → Import → Interactive → analysis → Documentation → Settings |
 | In-app docs | `pages/10_Documentation.py` reads `docs/USER_GUIDE(_ru).md` |
 | Install UX | `install`/`run` `.sh`/`.bat`: Claude-style banner, steps, actionable errors |
+| Run deps | `run.sh` / `run.bat` / `launch.py` check runtime imports; auto `pip install -r requirements.txt` if missing (incl. kaleido) |
 | Interactive UI | Denoise / Baseline / Model / Peaks expanders **collapsed by default**; uncertainty+PV sum panel |
 | Storage | JSON projects in `data/projects/` + SQLite index; sessions/exports as before |
 | Secrets | None required |

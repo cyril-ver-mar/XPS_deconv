@@ -142,25 +142,12 @@ ok "Dependencies installed"
 
 step 5 "$TOTAL" "Create data folders & smoke-test imports"
 mkdir -p data/projects data/sessions exports
-if ! "$VPY" - <<'PY'
-import importlib
-mods = ["streamlit", "numpy", "pandas", "scipy", "lmfit", "plotly", "olefile"]
-missing = []
-for m in mods:
-    try:
-        importlib.import_module(m)
-    except Exception as e:
-        missing.append(f"{m}: {e}")
-if missing:
-    raise SystemExit("\n".join(missing))
-print("ok")
-PY
-then
+if ! PYTHONPATH="$ROOT" "$VPY" -m src.utils.deps_check; then
   fail "Dependency import smoke-test failed" \
     "Re-run ./install.sh after fixing pip errors" \
-    "Activate venv and import packages manually to see the traceback"
+    "Activate venv and run: PYTHONPATH=. python -m src.utils.deps_check"
 fi
-ok "streamlit, numpy, lmfit, plotly, … import OK"
+ok "All runtime packages import OK (incl. kaleido, pillow, …)"
 ok "Folders: data/projects, data/sessions, exports"
 
 step 6 "$TOTAL" "Finish"

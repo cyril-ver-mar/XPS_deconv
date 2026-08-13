@@ -9,6 +9,10 @@ ROOT = Path(__file__).resolve().parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from src.utils.deps_check import guard_app_startup
+
+guard_app_startup()
+
 import streamlit as st
 
 from src.ui.components.sidebar import render_sidebar

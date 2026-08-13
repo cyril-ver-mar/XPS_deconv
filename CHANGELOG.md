@@ -3,6 +3,18 @@
 All notable changes to **XPS-Deconv** are listed here.  
 Version source of truth: root [`VERSION`](VERSION). Git tags: `vMAJOR.MINOR.PATCH`.
 
+## [1.0.6] — 2026-08-13
+
+### Added
+- **`src/utils/deps_check.py`** — single runtime dependency guard (incl. kaleido, pillow, matplotlib, openpyxl).
+- **`run.sh` / `run.bat`** — on launch, verify all runtime packages and auto `pip install -r requirements.txt` if anything is missing.
+- **`launch.py`** — same ensure step before starting Streamlit.
+- **`app.py`** — startup guard with a clear error page if packages are still missing.
+- **`install.sh` / `install.bat`** — smoke test uses full deps list (not only streamlit/numpy/…).
+
+### Fixed
+- Users with an old venv (no kaleido) no longer hit plot-export errors mid-session; re-run **run** or **install** to pull missing packages.
+
 ## [1.0.5] — 2026-08-10
 
 ### Added

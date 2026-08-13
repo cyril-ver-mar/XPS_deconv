@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""Launch Streamlit XPS-Deconv with clear errors."""
+"""Launch Streamlit XPS-Deconv with clear errors.
+
+On start: check runtime deps and install from requirements.txt if anything is missing.
+"""
 
 from __future__ import annotations
 
@@ -10,12 +13,33 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 
 
+def _ensure_deps() -> int | None:
+    """Install missing packages from requirements.txt. Return exit code on failure."""
+    if str(ROOT) not in sys.path:
+        sys.path.insert(0, str(ROOT))
+    from src.utils.deps_check import ensure_runtime_deps, format_cli_message
+
+    req = ROOT / "requirements.txt"
+    missing = ensure_runtime_deps(
+        requirements_path=req,
+        python_executable=sys.executable,
+        install_if_missing=True,
+    )
+    if missing:
+        print(format_cli_message(missing), file=sys.stderr)
+        return 1
+    return None
+
+
 def main() -> int:
     app = ROOT / "app.py"
     if not app.is_file():
         print("ERROR: app.py not found next to launch.py", file=sys.stderr)
         print(f"  Expected: {app}", file=sys.stderr)
         return 1
+    dep_err = _ensure_deps()
+    if dep_err is not None:
+        return dep_err
     try:
         import streamlit  # noqa: F401
     except ImportError:

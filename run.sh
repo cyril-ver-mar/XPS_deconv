@@ -84,14 +84,21 @@ if [[ ! -f launch.py ]]; then
     "Project files may be incomplete — re-clone or restore launch.py"
 fi
 
-if ! "$VPY" -c "import streamlit" 2>/dev/null; then
-  fail "streamlit is not installed in venv" \
-    "./install.sh" \
-    "Then: ./run.sh"
+if [[ ! -f requirements.txt ]]; then
+  fail "requirements.txt not found" \
+    "cd into the XPS-Deconv project folder" \
+    "Expected: $ROOT/requirements.txt"
 fi
 
 ok "venv ready"
-ok "streamlit available"
+printf '  %s→%s checking packages (install missing from requirements.txt)…\n' "$C_ACCENT" "$C_RESET"
+if ! PYTHONPATH="$ROOT" "$VPY" -m src.utils.deps_check --ensure; then
+  fail "Could not install or verify required packages" \
+    "Check network / pip, then: ./install.sh" \
+    "Or: source venv/bin/activate && pip install -r requirements.txt" \
+    "Then: ./run.sh"
+fi
+ok "all runtime packages ready"
 printf '  %s→%s launching…\n' "$C_ACCENT" "$C_RESET"
 echo
 

@@ -59,23 +59,37 @@ if not exist launch.py (
   exit /b 1
 )
 
-call "venv\Scripts\activate.bat"
-python -c "import streamlit" >nul 2>&1
-if errorlevel 1 (
+if not exist requirements.txt (
   echo.
   echo %C_ERR%+-- Error ------------------------------------------+%C_RESET%
-  echo %C_ERR%^|%C_RESET% streamlit is not installed in venv                %C_ERR%^|%C_RESET%
+  echo %C_ERR%^|%C_RESET% requirements.txt not found                         %C_ERR%^|%C_RESET%
   echo %C_ERR%+----------------------------------------------------+%C_RESET%
   echo.
   echo %C_BOLD%How to fix%C_RESET%
-  echo   %C_ACCENT%·%C_RESET% Run: install.bat
-  echo   %C_ACCENT%·%C_RESET% Then: run.bat
+  echo   %C_ACCENT%·%C_RESET% cd into the XPS-Deconv project folder
   echo.
   exit /b 1
 )
 
+call "venv\Scripts\activate.bat"
 echo   %C_OK%✓%C_RESET% venv ready
-echo   %C_OK%✓%C_RESET% streamlit available
+echo   %C_ACCENT%-^>%C_RESET% checking packages (install missing from requirements.txt)...
+set PYTHONPATH=%CD%
+python -m src.utils.deps_check --ensure
+if errorlevel 1 (
+  echo.
+  echo %C_ERR%+-- Error ------------------------------------------+%C_RESET%
+  echo %C_ERR%^|%C_RESET% Could not install or verify required packages     %C_ERR%^|%C_RESET%
+  echo %C_ERR%+----------------------------------------------------+%C_RESET%
+  echo.
+  echo %C_BOLD%How to fix%C_RESET%
+  echo   %C_ACCENT%·%C_RESET% Check network / pip, then: install.bat
+  echo   %C_ACCENT%·%C_RESET% Or: venv\Scripts\activate ^&^& pip install -r requirements.txt
+  echo   %C_ACCENT%·%C_RESET% Then: run.bat
+  echo.
+  exit /b 1
+)
+echo   %C_OK%✓%C_RESET% all runtime packages ready
 echo   %C_ACCENT%-^>%C_RESET% launching...
 echo.
 
