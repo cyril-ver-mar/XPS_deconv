@@ -147,7 +147,7 @@ if ! PYTHONPATH="$ROOT" "$VPY" -m src.utils.deps_check; then
     "Re-run ./install.sh after fixing pip errors" \
     "Activate venv and run: PYTHONPATH=. python -m src.utils.deps_check"
 fi
-ok "All runtime packages import OK (incl. kaleido, pillow, …)"
+ok "All runtime packages import OK (matplotlib, pillow, …)"
 ok "Folders: data/projects, data/sessions, exports"
 
 step 6 "$TOTAL" "Finish"

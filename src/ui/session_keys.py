@@ -38,6 +38,7 @@ DEFAULTS: Dict[str, Any] = {
     "pending_region_min": None,
     "pending_region_max": None,
     "overlay_saved_fit_id": None,
+    "active_entry_id": None,
 }
 
 

@@ -135,6 +135,8 @@ run.bat
 | Порт 8501 занят | Закройте другой Streamlit |
 | Браузер не открылся | Откройте http://localhost:8501 вручную |
 | Есть обновление | Баннер на главной; или Настройки → Обновления |
+| Не удалось проверить GitHub | Баннер с причиной (нет сети / таймаут / SSL / HTTP); Настройки → Обновления → Проверить сейчас |
+| Оформление графика | Настройки графика → Оформление (шрифты, оси, цвета, толщины — сразу на графике) |
 """
 
 USER_GUIDE_EN = """# XPS-Deconv — User guide
@@ -196,6 +198,8 @@ Use ❔ helpers next to parameters.
 | Port 8501 busy | Stop other Streamlit |
 | Browser did not open | Open http://localhost:8501 manually |
 | Update available | Banner on launch; or Settings → Updates |
+| Cannot check GitHub | Banner names the reason (no network / timeout / SSL / HTTP); Settings → Updates → Check now |
+| Plot style | Plot settings → Style (fonts, axis names, colors, widths — live preview) |
 """
 
 

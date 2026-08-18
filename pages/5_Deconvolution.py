@@ -94,9 +94,9 @@ def _same_peak(a: PeakConfig, name: str, center: float) -> bool:
     return a.name.strip() == name.strip() and abs(a.center - center) < 1e-6
 
 
-labeled_help("Peak model", "peak_model", lang)
+labeled_help(t("peak_model", lang), "peak_model", lang)
 peak_model = st.selectbox(
-    "Peak model",
+    t("peak_model", lang),
     list(PEAK_MODELS),
     index=list(PEAK_MODELS).index(st.session_state.get("peak_model", "pseudovoigt")),
 )
@@ -104,20 +104,20 @@ peak_model = st.selectbox(
 st.subheader(t("constraints", lang))
 c1, c2, c3 = st.columns(3)
 with c1:
-    labeled_help("Fix FWHM (all)", "fix_fwhm", lang)
-    fix_fwhm = st.toggle("Fix FWHM (all peaks)", value=st.session_state.fit_constraints.enable_fix_fwhm)
+    labeled_help(t("fix_fwhm_all", lang), "fix_fwhm", lang)
+    fix_fwhm = st.toggle(t("fix_fwhm_all", lang), value=st.session_state.fit_constraints.enable_fix_fwhm)
 with c2:
-    labeled_help("Shared sigma", "shared_sigma", lang)
-    shared_sigma = st.toggle("Shared sigma", value=st.session_state.fit_constraints.shared_sigma)
+    labeled_help(t("shared_sigma", lang), "shared_sigma", lang)
+    shared_sigma = st.toggle(t("shared_sigma", lang), value=st.session_state.fit_constraints.shared_sigma)
 with c3:
-    labeled_help("Doublet links", "link_group", lang)
-    doublet = st.toggle("Enable doublet links", value=st.session_state.fit_constraints.enable_doublet_links)
+    labeled_help(t("doublet_links", lang), "link_group", lang)
+    doublet = st.toggle(t("enable_doublet_links", lang), value=st.session_state.fit_constraints.enable_doublet_links)
 
 lib = load_library()
 core_options = ["—"] + list(lib.keys())
 default_core = sp.core_level if sp.core_level in lib else "—"
 core = st.selectbox(
-    "Core level for library",
+    t("core_level_library", lang),
     core_options,
     index=core_options.index(default_core) if default_core in core_options else 0,
 )
@@ -125,8 +125,7 @@ suggestions = lib.get(core, []) if core != "—" else []
 
 st.subheader(t("peaks", lang))
 st.caption(
-    f"Active peaks: **{len(st.session_state['peak_configs'])}**. "
-    "Default tolerance = 0 (fixed center). Use Delete / Clear all as needed."
+    t("active_peaks_caption", lang, n=len(st.session_state["peak_configs"]))
 )
 
 if st.session_state.pop("pending_clear_lib_pick", False):
@@ -134,7 +133,7 @@ if st.session_state.pop("pending_clear_lib_pick", False):
 
 if suggestions:
     pick = st.multiselect(
-        "Add from library",
+        t("add_from_library", lang),
         options=[f"{n} @ {e:.2f}" for n, e in suggestions],
         key="lib_peak_pick",
     )
@@ -143,13 +142,13 @@ else:
 
 b1, b2, b3, b4 = st.columns(4)
 with b1:
-    add_lib = st.button("Add selected from library", disabled=not pick)
+    add_lib = st.button(t("add_selected_lib", lang), disabled=not pick)
 with b2:
-    add_blank = st.button("Add blank peak")
+    add_blank = st.button(t("add_blank_peak", lang))
 with b3:
-    save_edits = st.button("Save peak edits")
+    save_edits = st.button(t("save_peak_edits", lang))
 with b4:
-    clear_all = st.button("Clear all peaks", type="secondary")
+    clear_all = st.button(t("clear_all_peaks", lang), type="secondary")
 
 if add_lib and pick:
     configs = _sync_peaks_from_widgets()
@@ -184,7 +183,7 @@ if add_blank:
 if save_edits:
     _sync_peaks_from_widgets()
     persist_session_to_active(save_disk=True)
-    st.success("Saved")
+    st.success(t("saved_ok", lang))
 
 if clear_all:
     for p in list(st.session_state["peak_configs"]):
@@ -205,7 +204,7 @@ if pending_delete:
 
 existing: list[PeakConfig] = list(st.session_state["peak_configs"])
 if not existing:
-    st.info("No peaks yet. Add from the library or use **Add blank peak**.")
+    st.info(t("no_peaks_yet", lang))
 
 for i, base in enumerate(existing):
     keys = _peak_widget_keys(base.uid)
@@ -228,31 +227,34 @@ for i, base in enumerate(existing):
     if keys["link_d"] not in st.session_state:
         st.session_state[keys["link_d"]] = float(base.link_delta_be or 0.0)
 
-    with st.expander(f"Peak {i + 1}: {st.session_state[keys['name']]}", expanded=False):
+    with st.expander(
+        t("peak_n_header", lang, n=i + 1, name=st.session_state[keys["name"]]),
+        expanded=False,
+    ):
         head_l, head_r = st.columns([4, 1])
         with head_l:
-            st.text_input("Name", key=keys["name"])
+            st.text_input(t("peak_name_label", lang), key=keys["name"])
         with head_r:
-            if st.button("Delete", key=f"del_{base.uid}", type="primary"):
+            if st.button(t("delete", lang), key=f"del_{base.uid}", type="primary"):
                 st.session_state["pending_delete_peak_uid"] = base.uid
                 st.rerun()
-        st.number_input("Center (eV)", format="%.3f", key=keys["center"])
-        labeled_help("Tolerance / pos_error", "tolerance", lang)
-        st.number_input("Tolerance ±eV (0 = fix center)", key=keys["tol"])
-        st.number_input("Sigma guess", key=keys["sigma"])
-        labeled_help("GL fraction", "gl_fraction", lang)
-        st.slider("GL fraction (pseudovoigt)", 0.0, 1.0, key=keys["frac"])
-        labeled_help("Fix center", "fix_center", lang)
-        st.checkbox("Fix center", key=keys["fix_c"])
-        labeled_help("Fix FWHM", "fix_fwhm", lang)
-        st.checkbox("Fix FWHM (this peak)", key=keys["fix_w"])
-        labeled_help("Link group", "link_group", lang)
-        st.text_input("Link group id (optional)", key=keys["link_g"])
-        labeled_help("Link ΔBE", "link_delta", lang)
-        st.number_input("Link ΔBE (eV)", key=keys["link_d"])
+        st.number_input(t("center_ev", lang), format="%.3f", key=keys["center"])
+        labeled_help(t("tolerance_pos", lang), "tolerance", lang)
+        st.number_input(t("tolerance_ev", lang), key=keys["tol"])
+        st.number_input(t("sigma_guess", lang), key=keys["sigma"])
+        labeled_help(t("gl_fraction", lang), "gl_fraction", lang)
+        st.slider(t("gl_fraction", lang), 0.0, 1.0, key=keys["frac"])
+        labeled_help(t("fix_center", lang), "fix_center", lang)
+        st.checkbox(t("fix_center", lang), key=keys["fix_c"])
+        labeled_help(t("fix_fwhm", lang), "fix_fwhm", lang)
+        st.checkbox(t("fix_fwhm_this", lang), key=keys["fix_w"])
+        labeled_help(t("link_group", lang), "link_group", lang)
+        st.text_input(t("link_group_id", lang), key=keys["link_g"])
+        labeled_help(t("link_dbe", lang), "link_delta", lang)
+        st.number_input(t("link_dbe", lang), key=keys["link_d"])
 
-run_label = st.text_input("Label for this fit in the sequence", value="fit")
-save_named = st.checkbox("Also store as named saved fit", value=False)
+run_label = st.text_input(t("fit_sequence_label", lang), value="fit")
+save_named = st.checkbox(t("also_store_named", lang), value=False)
 
 if st.button(t("run_fit", lang), type="primary", disabled=not st.session_state["peak_configs"]):
     configs = _sync_peaks_from_widgets()
@@ -265,7 +267,7 @@ if st.button(t("run_fit", lang), type="primary", disabled=not st.session_state["
     st.session_state["fit_constraints"] = constraints
     token: CancelToken = st.session_state["cancel_token"]
     token.reset()
-    progress = st.progress(0, text="Starting…")
+    progress = st.progress(0, text=t("fit_starting", lang))
 
     def on_prog(v: int, desc: str) -> None:
         progress.progress(min(100, max(0, v)) / 100.0, text=desc)
@@ -328,8 +330,12 @@ if st.button(t("run_fit", lang), type="primary", disabled=not st.session_state["
             st.session_state["deconv_main_tf"] = True
             st.session_state["deconv_main_tcomp"] = True
         st.success(
-            f"Fit complete — R={out['metrics'].get('R', float('nan')):.4f}, "
-            f"R²={out['metrics'].get('R_squared', out['metrics'].get('r_squared', float('nan'))):.4f}"
+            t(
+                "fit_complete",
+                lang,
+                r=out["metrics"].get("R", float("nan")),
+                r2=out["metrics"].get("R_squared", out["metrics"].get("r_squared", float("nan"))),
+            )
         )
 
 if st.session_state.get("metrics"):

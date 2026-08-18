@@ -91,7 +91,7 @@ if [[ ! -f requirements.txt ]]; then
 fi
 
 ok "venv ready"
-printf '  %s→%s checking packages (install missing from requirements.txt)…\n' "$C_ACCENT" "$C_RESET"
+printf '  %s→%s checking packages (install missing, remove unused)…\n' "$C_ACCENT" "$C_RESET"
 if ! PYTHONPATH="$ROOT" "$VPY" -m src.utils.deps_check --ensure; then
   fail "Could not install or verify required packages" \
     "Check network / pip, then: ./install.sh" \

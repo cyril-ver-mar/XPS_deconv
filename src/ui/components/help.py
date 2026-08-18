@@ -6,6 +6,8 @@ from typing import Optional
 
 import streamlit as st
 
+from src.utils.i18n import DEFAULT_LANG
+
 HELP: dict[str, dict[str, str]] = {
     "invert_x": {
         "en": "Reverse the binding-energy axis. XPS is usually plotted high→low BE (right to left).",
@@ -13,11 +15,11 @@ HELP: dict[str, dict[str, str]] = {
     },
     "axis_x": {
         "en": "Set the visible Binding Energy window (eV). Use Reset view to restore the full data range.",
-        "ru": "Видимый диапазон Binding Energy (эВ). Reset view возвращает полный диапазон данных.",
+        "ru": "Видимый диапазон энергии связи (эВ). «Сбросить вид» возвращает полный диапазон данных.",
     },
     "axis_y": {
         "en": "Set the visible intensity range. Use Reset view to restore autoscaling from the data.",
-        "ru": "Видимый диапазон интенсивности. Reset view возвращает авто-масштаб по данным.",
+        "ru": "Видимый диапазон интенсивности. «Сбросить вид» возвращает авто-масштаб по данным.",
     },
     "region_crop": {
         "en": "Crop to one ROI for fitting. Only points inside BE min–max are kept as the active spectrum.",
@@ -101,11 +103,23 @@ HELP: dict[str, dict[str, str]] = {
     },
     "show_traces": {
         "en": "Toggle which curves are drawn: raw, denoised, baseline, corrected, total fit, components, fills.",
-        "ru": "Какие кривые рисовать: сырой, denoised, baseline, corrected, суммарный фит, компоненты, заливки.",
+        "ru": "Какие кривые рисовать: сырой, сглаженный, базовая линия, после baseline, суммарный фит, компоненты, заливки.",
     },
     "fill_alpha": {
         "en": "Transparency of filled peak areas (0 = invisible, 1 = opaque).",
         "ru": "Прозрачность заливки площадей пиков (0 — не видно, 1 — непрозрачно).",
+    },
+    "plot_style": {
+        "en": "Fonts, axis names, colors, line widths, and grid (including minor grid) update the plot above immediately. Export uses the same style. Compact Y ticks (25k) are optional — off by default (full numbers).",
+        "ru": "Шрифты, подписи осей, цвета, толщины линий и сетка сразу меняют график выше. Экспорт использует то же оформление. Сокращение интенсивности (25k) — по желанию; по умолчанию полные числа.",
+    },
+    "element_bands": {
+        "en": "Shaded typical binding-energy windows for common core levels (same ranges as region presets). Enable each line and pick a color. The label sits above the band.",
+        "ru": "Типичные окна энергии связи для уровней (те же диапазоны, что у пресетов области). Включите нужные и выберите цвет. Подпись — над полосой.",
+    },
+    "peak_be_labels": {
+        "en": "Label each fitted component at the binding energy of its intensity maximum. Choose how many decimal digits to show.",
+        "ru": "Подписать каждый компонент в энергии связи его максимума интенсивности. Число знаков после запятой задаётся отдельно.",
     },
     "project": {
         "en": "A project stores many uploaded VGD spectra and your analysis state so you can reload and continue later.",
@@ -114,14 +128,14 @@ HELP: dict[str, dict[str, str]] = {
 }
 
 
-def help_mark(key: str, lang: str = "en", label: str = "❔") -> None:
+def help_mark(key: str, lang: str = DEFAULT_LANG, label: str = "❔") -> None:
     """Inline ❔ popover with help text."""
     text = HELP.get(key, {}).get(lang) or HELP.get(key, {}).get("en") or key
     with st.popover(label, help=text[:80] if text else None):
         st.markdown(text)
 
 
-def labeled_help(title: str, key: str, lang: str = "en") -> None:
+def labeled_help(title: str, key: str, lang: str = DEFAULT_LANG) -> None:
     c1, c2 = st.columns([0.82, 0.18])
     with c1:
         st.markdown(f"**{title}**")

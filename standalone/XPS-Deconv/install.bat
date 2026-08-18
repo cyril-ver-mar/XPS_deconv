@@ -159,7 +159,7 @@ if errorlevel 1 (
   echo.
   exit /b 1
 )
-echo   %C_OK%✓%C_RESET% All runtime packages import OK (incl. kaleido, pillow, ...)
+echo   %C_OK%✓%C_RESET% All runtime packages import OK (matplotlib, pillow, ...)
 echo   %C_OK%✓%C_RESET% Folders: data\projects, data\sessions, exports
 
 echo %C_ACCENT%[6/6]%C_RESET% %C_BOLD%Finish%C_RESET%

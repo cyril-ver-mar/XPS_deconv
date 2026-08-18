@@ -47,9 +47,9 @@ with left:
         noise_window = st.slider(
             t("window", lang), 3, 51, int(st.session_state.get("noise_window", 5)), step=2, key="ws_nw"
         )
-        labeled_help("Savgol poly", "denoise_savgol_poly", lang)
+        labeled_help(t("savgol_poly_short", lang), "denoise_savgol_poly", lang)
         savgol_poly = st.number_input(
-            "Savgol poly", 1, 5, int(st.session_state.get("savgol_poly", 2)), key="ws_sg"
+            t("savgol_poly_short", lang), 1, 5, int(st.session_state.get("savgol_poly", 2)), key="ws_sg"
         )
 
     with st.expander(t("baseline", lang), expanded=False):
@@ -64,9 +64,9 @@ with left:
             ),
             key="ws_bl_method",
         )
-        labeled_help("Edge fraction", "edge_fraction", lang)
+        labeled_help(t("edge_fraction", lang), "edge_fraction", lang)
         edge_fraction = st.slider(
-            "Edge fraction",
+            t("edge_fraction", lang),
             0.02,
             0.25,
             float(st.session_state.baseline_settings.edge_fraction),
@@ -85,17 +85,17 @@ with left:
     with st.expander(t("constraints", lang), expanded=False):
         labeled_help(t("peak_model", lang), "peak_model", lang)
         peak_model = st.selectbox(t("peak_model", lang), list(PEAK_MODELS), key="ws_pm")
-        labeled_help("Fix FWHM", "fix_fwhm", lang)
+        labeled_help(t("fix_fwhm", lang), "fix_fwhm", lang)
         fix_fwhm = st.toggle(
-            "Fix FWHM", value=st.session_state.fit_constraints.enable_fix_fwhm, key="ws_ff"
+            t("fix_fwhm", lang), value=st.session_state.fit_constraints.enable_fix_fwhm, key="ws_ff"
         )
-        labeled_help("Shared sigma", "shared_sigma", lang)
+        labeled_help(t("shared_sigma", lang), "shared_sigma", lang)
         shared_sigma = st.toggle(
-            "Shared sigma", value=st.session_state.fit_constraints.shared_sigma, key="ws_ss"
+            t("shared_sigma", lang), value=st.session_state.fit_constraints.shared_sigma, key="ws_ss"
         )
-        labeled_help("Doublet links", "link_group", lang)
+        labeled_help(t("doublet_links", lang), "link_group", lang)
         doublet = st.toggle(
-            "Doublet links",
+            t("doublet_links", lang),
             value=st.session_state.fit_constraints.enable_doublet_links,
             key="ws_db",
         )
@@ -109,7 +109,7 @@ with left:
         core_options = ["—"] + list(lib.keys())
         default_core = sp.core_level if sp.core_level in lib else "—"
         ws_core = st.selectbox(
-            "Library core level",
+            t("library_core_level", lang),
             core_options,
             index=core_options.index(default_core) if default_core in core_options else 0,
             key="ws_lib_core",
@@ -117,7 +117,7 @@ with left:
         suggestions = lib.get(ws_core, []) if ws_core != "—" else []
         if suggestions:
             pick = st.multiselect(
-                "Add from library",
+                t("add_from_library", lang),
                 options=[f"{n} @ {e:.2f}" for n, e in suggestions],
                 key="ws_lib_pick",
             )
@@ -154,22 +154,22 @@ with left:
         new_configs: list[PeakConfig] = []
         for i, p in enumerate(configs):
             with st.expander(f"{p.name}", expanded=False):
-                name = st.text_input("Name", value=p.name, key=f"ws_n_{p.uid}")
+                name = st.text_input(t("peak_name_label", lang), value=p.name, key=f"ws_n_{p.uid}")
                 center = st.number_input(
-                    "Center", value=float(p.center), format="%.3f", key=f"ws_c_{p.uid}"
+                    t("center", lang), value=float(p.center), format="%.3f", key=f"ws_c_{p.uid}"
                 )
-                labeled_help("Tolerance", "tolerance", lang)
+                labeled_help(t("tolerance", lang), "tolerance", lang)
                 tol = st.number_input(
-                    "Tolerance / pos_error", value=float(p.tolerance), key=f"ws_t_{p.uid}"
+                    t("tolerance_pos", lang), value=float(p.tolerance), key=f"ws_t_{p.uid}"
                 )
-                sigma = st.number_input("Sigma", value=float(p.sigma), key=f"ws_s_{p.uid}")
-                labeled_help("Fix center", "fix_center", lang)
+                sigma = st.number_input(t("sigma", lang), value=float(p.sigma), key=f"ws_s_{p.uid}")
+                labeled_help(t("fix_center", lang), "fix_center", lang)
                 fix_c = st.checkbox(
-                    "Fix center", value=p.fix_center or tol <= 0, key=f"ws_fc_{p.uid}"
+                    t("fix_center", lang), value=p.fix_center or tol <= 0, key=f"ws_fc_{p.uid}"
                 )
-                labeled_help("Fix FWHM", "fix_fwhm", lang)
-                fix_w = st.checkbox("Fix FWHM", value=p.fix_fwhm, key=f"ws_fw_{p.uid}")
-                if st.button("Delete", key=f"ws_del_{p.uid}"):
+                labeled_help(t("fix_fwhm", lang), "fix_fwhm", lang)
+                fix_w = st.checkbox(t("fix_fwhm", lang), value=p.fix_fwhm, key=f"ws_fw_{p.uid}")
+                if st.button(t("delete", lang), key=f"ws_del_{p.uid}"):
                     st.session_state["peak_configs"] = [x for x in configs if x.uid != p.uid]
                     st.rerun()
                 new_configs.append(
@@ -190,9 +190,9 @@ with left:
             st.session_state["peak_configs"] = new_configs
             configs = new_configs
 
-    auto = st.checkbox("Auto-refit when clicking Apply", value=True)
+    auto = st.checkbox(t("auto_refit", lang), value=True)
     apply = st.button(t("apply_refit", lang), type="primary")
-    save_name = st.text_input("Save current fit as", value="workspace_fit")
+    save_name = st.text_input(t("save_current_fit_as", lang), value="workspace_fit")
     do_save = st.button(t("save_named_fit", lang))
 
 with right:
@@ -285,19 +285,19 @@ with right:
         saved[snap.id] = snap
         st.session_state["saved_fits"] = saved
         persist_session_to_active(save_disk=True)
-        st.success(f"Saved fit `{save_name}`")
+        st.success(t("saved_fit_ok", lang, name=save_name))
 
     saved = dict(st.session_state.get("saved_fits") or {})
     if saved:
         sid = st.selectbox(
-            "Show saved fit (overlay as previous/grey via load)",
+            t("show_saved_fit", lang),
             options=["—"] + list(saved.keys()),
             format_func=lambda i: "—" if i == "—" else f"{saved[i].label} ({i})",
         )
-        if sid != "—" and st.button("Overlay saved fit (grey)"):
+        if sid != "—" and st.button(t("overlay_saved_grey", lang)):
             st.session_state["previous_fit"] = np.asarray(saved[sid].best_fit)
             st.rerun()
-        if sid != "—" and st.button("Load saved fit as current"):
+        if sid != "—" and st.button(t("load_saved_as_current", lang)):
             snap = saved[sid]
             st.session_state["previous_fit"] = st.session_state.get("best_fit")
             st.session_state["best_fit"] = None if snap.best_fit is None else np.asarray(snap.best_fit)

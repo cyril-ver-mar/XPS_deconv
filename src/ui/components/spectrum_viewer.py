@@ -14,8 +14,9 @@ import streamlit as st
 from src.core.models import BeWindow
 from src.ui.components.help import help_mark, labeled_help
 from src.ui.components.plot_export import render_plot_export_controls
+from src.ui.components.plot_settings import apply_style_to_view, render_plot_style_controls, seed_plot_style_state
 from src.ui.components.plots import PlotViewState, spectrum_figure
-from src.utils.i18n import t
+from src.utils.i18n import DEFAULT_LANG, t
 
 
 def _ensure_view(key: str) -> PlotViewState:
@@ -63,6 +64,8 @@ def _seed_plot_state(
         f"{viewer_key}_ymax": data_ymax,
         f"{viewer_key}_invx": True,
         f"{viewer_key}_alpha": float(view.fill_alpha),
+        f"{viewer_key}_pbe": False,
+        f"{viewer_key}_pbe_d": 2,
     }
     if not st.session_state.get(init_flag):
         for key, value in defaults.items():
@@ -80,7 +83,7 @@ def render_spectrum_viewer(
     *,
     viewer_key: str,
     title: str = "",
-    lang: str = "en",
+    lang: str = DEFAULT_LANG,
     region: Optional[BeWindow] = None,
     baseline: Optional[np.ndarray] = None,
     corrected: Optional[np.ndarray] = None,
@@ -113,6 +116,7 @@ def render_spectrum_viewer(
     )
 
     _seed_plot_state(viewer_key, view, data_xmin, data_xmax, data_ymin, data_ymax)
+    seed_plot_style_state(viewer_key, lang)
 
     vis_keys = {
         "raw": f"{viewer_key}_tr",
@@ -131,11 +135,30 @@ def render_spectrum_viewer(
     # Compact invert control — does not touch axis ranges or trace flags
     if f"{viewer_key}_invx" not in st.session_state:
         st.session_state[f"{viewer_key}_invx"] = True
+    if f"{viewer_key}_pbe" not in st.session_state:
+        st.session_state[f"{viewer_key}_pbe"] = False
+    if f"{viewer_key}_pbe_d" not in st.session_state:
+        st.session_state[f"{viewer_key}_pbe_d"] = 2
     inv_col, help_col = st.columns([1, 0.15])
     with inv_col:
-        st.checkbox(t("invert_x", lang), key=f"{viewer_key}_invx", help="XPS usually high→low BE")
+        st.checkbox(t("invert_x", lang), key=f"{viewer_key}_invx", help=t("invert_x_help", lang))
     with help_col:
         help_mark("invert_x", lang)
+
+    if components:
+        lb, dg, hp = st.columns([1.4, 0.8, 0.2])
+        with lb:
+            st.checkbox(t("plot_peak_be_labels", lang), key=f"{viewer_key}_pbe")
+        with dg:
+            st.number_input(
+                t("plot_peak_be_digits", lang),
+                min_value=0,
+                max_value=6,
+                step=1,
+                key=f"{viewer_key}_pbe_d",
+            )
+        with hp:
+            help_mark("peak_be_labels", lang)
 
     st.markdown('<div style="height: 0.5rem;"></div>', unsafe_allow_html=True)
 
@@ -146,8 +169,11 @@ def render_spectrum_viewer(
     view.y_min = float(st.session_state.get(f"{viewer_key}_ymin", data_ymin))
     view.y_max = float(st.session_state.get(f"{viewer_key}_ymax", data_ymax))
     view.fill_alpha = float(st.session_state.get(f"{viewer_key}_alpha", view.fill_alpha))
+    view.show_peak_be_labels = bool(st.session_state.get(f"{viewer_key}_pbe", False))
+    view.peak_be_digits = int(st.session_state.get(f"{viewer_key}_pbe_d", 2))
     for attr, key in vis_keys.items():
         setattr(view.visibility, attr, bool(st.session_state.get(key, True)))
+    view = apply_style_to_view(view, viewer_key, lang)
 
     st.session_state[f"plot_view_{viewer_key}"] = view
     if title:
@@ -168,58 +194,70 @@ def render_spectrum_viewer(
         highlight_full=highlight_full,
         previous_fit=previous_fit,
         view=view,
+        lang=lang,
     )
     # Constant uirevision — invert must not remount ranges
     fig.update_layout(uirevision=f"{viewer_key}-stable")
     st.plotly_chart(fig, use_container_width=True)
 
     with st.expander(t("plot_settings", lang), expanded=False):
-        c1, c2 = st.columns(2)
-        with c1:
-            if st.button(t("fit_all_view", lang), key=f"{viewer_key}_fitdata"):
-                st.session_state[f"{viewer_key}_xmin"] = data_xmin
-                st.session_state[f"{viewer_key}_xmax"] = data_xmax
-                st.session_state[f"{viewer_key}_ymin"] = data_ymin
-                st.session_state[f"{viewer_key}_ymax"] = data_ymax
-                st.rerun()
-            if st.button(t("reset_view", lang), key=f"{viewer_key}_reset"):
-                st.session_state[f"{viewer_key}_xmin"] = data_xmin
-                st.session_state[f"{viewer_key}_xmax"] = data_xmax
-                st.session_state[f"{viewer_key}_ymin"] = data_ymin
-                st.session_state[f"{viewer_key}_ymax"] = data_ymax
-                st.rerun()
-        with c2:
-            labeled_help(t("fill_alpha", lang), "fill_alpha", lang)
-            st.slider(t("fill_alpha", lang), 0.0, 1.0, key=f"{viewer_key}_alpha")
+        tab_view, tab_style, tab_export = st.tabs(
+            [
+                t("plot_tab_view", lang),
+                t("plot_tab_style", lang),
+                t("plot_tab_export", lang),
+            ]
+        )
+        with tab_view:
+            c1, c2 = st.columns(2)
+            with c1:
+                if st.button(t("fit_all_view", lang), key=f"{viewer_key}_fitdata"):
+                    st.session_state[f"{viewer_key}_xmin"] = data_xmin
+                    st.session_state[f"{viewer_key}_xmax"] = data_xmax
+                    st.session_state[f"{viewer_key}_ymin"] = data_ymin
+                    st.session_state[f"{viewer_key}_ymax"] = data_ymax
+                    st.rerun()
+                if st.button(t("reset_view", lang), key=f"{viewer_key}_reset"):
+                    st.session_state[f"{viewer_key}_xmin"] = data_xmin
+                    st.session_state[f"{viewer_key}_xmax"] = data_xmax
+                    st.session_state[f"{viewer_key}_ymin"] = data_ymin
+                    st.session_state[f"{viewer_key}_ymax"] = data_ymax
+                    st.rerun()
+            with c2:
+                labeled_help(t("fill_alpha", lang), "fill_alpha", lang)
+                st.slider(t("fill_alpha", lang), 0.0, 1.0, key=f"{viewer_key}_alpha")
 
-        ax1, ax2 = st.columns(2)
-        with ax1:
-            labeled_help("X range (BE, eV)", "axis_x", lang)
-            st.number_input(t("x_min", lang), key=f"{viewer_key}_xmin", format="%.4f")
-            st.number_input(t("x_max", lang), key=f"{viewer_key}_xmax", format="%.4f")
-        with ax2:
-            labeled_help("Y range (intensity)", "axis_y", lang)
-            st.number_input(t("y_min", lang), key=f"{viewer_key}_ymin", format="%.4f")
-            st.number_input(t("y_max", lang), key=f"{viewer_key}_ymax", format="%.4f")
+            ax1, ax2 = st.columns(2)
+            with ax1:
+                labeled_help(t("x_range_label", lang), "axis_x", lang)
+                st.number_input(t("x_min", lang), key=f"{viewer_key}_xmin", format="%.4f")
+                st.number_input(t("x_max", lang), key=f"{viewer_key}_xmax", format="%.4f")
+            with ax2:
+                labeled_help(t("y_range_label", lang), "axis_y", lang)
+                st.number_input(t("y_min", lang), key=f"{viewer_key}_ymin", format="%.4f")
+                st.number_input(t("y_max", lang), key=f"{viewer_key}_ymax", format="%.4f")
 
-        if show_trace_toggles:
-            labeled_help(t("show_traces", lang), "show_traces", lang)
-            t1, t2, t3, t4 = st.columns(4)
-            with t1:
-                st.checkbox(t("trace_raw", lang), key=vis_keys["raw"])
-                st.checkbox(t("trace_denoised", lang), key=vis_keys["denoised"])
-            with t2:
-                st.checkbox(t("trace_baseline", lang), key=vis_keys["baseline"])
-                st.checkbox(t("trace_corrected", lang), key=vis_keys["corrected"])
-            with t3:
-                st.checkbox(t("trace_total_fit", lang), key=vis_keys["best_fit"])
-                st.checkbox(t("trace_previous", lang), key=vis_keys["previous_fit"])
-            with t4:
-                st.checkbox(t("trace_components", lang), key=vis_keys["components"])
-                st.checkbox(t("trace_fills", lang), key=vis_keys["fills"])
+            if show_trace_toggles:
+                labeled_help(t("show_traces", lang), "show_traces", lang)
+                t1, t2, t3, t4 = st.columns(4)
+                with t1:
+                    st.checkbox(t("trace_raw", lang), key=vis_keys["raw"])
+                    st.checkbox(t("trace_denoised", lang), key=vis_keys["denoised"])
+                with t2:
+                    st.checkbox(t("trace_baseline", lang), key=vis_keys["baseline"])
+                    st.checkbox(t("trace_corrected", lang), key=vis_keys["corrected"])
+                with t3:
+                    st.checkbox(t("trace_total_fit", lang), key=vis_keys["best_fit"])
+                    st.checkbox(t("trace_previous", lang), key=vis_keys["previous_fit"])
+                with t4:
+                    st.checkbox(t("trace_components", lang), key=vis_keys["components"])
+                    st.checkbox(t("trace_fills", lang), key=vis_keys["fills"])
 
-        st.divider()
-        stem = title.strip() if title else viewer_key
-        render_plot_export_controls(fig, key=viewer_key, lang=lang, default_stem=stem or "spectrum")
+        with tab_style:
+            render_plot_style_controls(viewer_key, lang)
+
+        with tab_export:
+            stem = title.strip() if title else viewer_key
+            render_plot_export_controls(fig, key=viewer_key, lang=lang, default_stem=stem or "spectrum")
 
     return view

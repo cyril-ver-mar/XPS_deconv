@@ -30,7 +30,7 @@ name = st.text_input(t("session_name", lang), value="fit_session")
 notes = st.text_input(t("notes", lang), value="")
 if st.button(t("save_current_session", lang), type="primary"):
     path = save_session(name, dict(st.session_state), notes=notes)
-    st.success(f"Saved {path}")
+    st.success(t("saved_path", lang, path=path))
 
 st.subheader(t("load_session", lang))
 rows = list_sessions()
@@ -38,10 +38,10 @@ if not rows:
     st.caption(t("no_sessions", lang))
 else:
     labels = {r["id"]: f"{r['name']} | {r['core_level']} | {r['created_at']}" for r in rows}
-    sid = st.selectbox("Indexed sessions", options=list(labels.keys()), format_func=lambda i: labels[i])
+    sid = st.selectbox(t("indexed_sessions", lang), options=list(labels.keys()), format_func=lambda i: labels[i])
     c1, c2 = st.columns(2)
     with c1:
-        if st.button("Load selected"):
+        if st.button(t("load_selected", lang)):
             row = next(r for r in rows if r["id"] == sid)
             loaded = load_session(row["json_path"])
             for key in (
@@ -62,51 +62,51 @@ else:
             ):
                 if key in loaded:
                     st.session_state[key] = loaded[key]
-            st.success("Session loaded into memory")
+            st.success(t("session_loaded", lang))
             st.rerun()
     with c2:
-        if st.button("Delete selected"):
+        if st.button(t("delete_selected", lang)):
             delete_session(int(sid))
-            st.warning("Deleted")
+            st.warning(t("deleted_ok", lang))
             st.rerun()
 
-manual = st.text_input("Or load JSON path")
-if st.button("Load JSON path") and manual.strip():
+manual = st.text_input(t("or_load_json", lang))
+if st.button(t("load_json_path", lang)) and manual.strip():
     loaded = load_session(manual.strip())
     for key, val in loaded.items():
         if key != "raw":
             st.session_state[key] = val
-    st.success("Loaded")
+    st.success(t("loaded_ok", lang))
     st.rerun()
 
-st.subheader("Export")
-base = st.text_input("Export basename", value="xps_export")
+st.subheader(t("export", lang))
+base = st.text_input(t("export_basename", lang), value="xps_export")
 e1, e2, e3 = st.columns(3)
 with e1:
-    if st.button("Excel (.xlsx)"):
+    if st.button(t("excel_xlsx", lang)):
         path = export_excel(dict(st.session_state), base)
         st.success(str(path))
 with e2:
-    if st.button("Peaks CSV") and st.session_state.get("peaks_df") is not None:
+    if st.button(t("peaks_csv", lang)) and st.session_state.get("peaks_df") is not None:
         path = export_peaks_csv(st.session_state["peaks_df"], base + "_peaks")
         st.success(str(path))
 with e3:
-    if st.button("PNG figure"):
+    if st.button(t("png_figure", lang)):
         sp = st.session_state.get("active_spectrum") or st.session_state.get("full_spectrum")
         if sp is None:
-            st.error("No spectrum")
+            st.error(t("no_spectrum", lang))
         else:
             fig, ax = plt.subplots(figsize=(10, 5))
-            ax.plot(sp.binding_energy, sp.intensity, label="Spectrum")
+            ax.plot(sp.binding_energy, sp.intensity, label=t("trace_spectrum", lang))
             if st.session_state.get("baseline") is not None:
-                ax.plot(sp.binding_energy, st.session_state["baseline"], "--", label="Baseline")
+                ax.plot(sp.binding_energy, st.session_state["baseline"], "--", label=t("trace_baseline", lang))
             if st.session_state.get("corrected") is not None:
-                ax.plot(sp.binding_energy, st.session_state["corrected"], label="Corrected")
+                ax.plot(sp.binding_energy, st.session_state["corrected"], label=t("trace_corrected", lang))
             if st.session_state.get("best_fit") is not None:
-                ax.plot(sp.binding_energy, st.session_state["best_fit"], label="Fit")
+                ax.plot(sp.binding_energy, st.session_state["best_fit"], label=t("trace_total_fit", lang))
             ax.invert_xaxis()
-            ax.set_xlabel("Binding energy (eV)")
-            ax.set_ylabel("Intensity")
+            ax.set_xlabel(t("plot_default_x", lang))
+            ax.set_ylabel(t("plot_default_y", lang))
             ax.legend()
             ax.grid(True, alpha=0.3)
             out = EXPORTS_DIR / f"{base}.png"

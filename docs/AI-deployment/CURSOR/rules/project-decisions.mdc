@@ -10,7 +10,7 @@ Plot UX: `docs/AI-deployment/TASK_PLAYBOOKS/11_scientific_plots_ux.md`.
 
 - When the user locks a requirement, update DECISIONS (and this rule if it changes how code must be written).
 - Prefer the living architecture guide / playbook 11 over ad-hoc notebook patterns when they conflict.
-- Scientific plots: retain axis ranges on invert; Preview ≠ Apply; tables over JSON dumps; collapsed dense panels; PNG/JPEG/TIFF export (inches + DPI) in Plot settings.
-- Standalone updates: GitHub Releases check on launch; optional zip install; `GITHUB_REPO` / `XPS_DECONV_GITHUB_REPO`.
+- Scientific plots: retain axis ranges on invert; Preview ≠ Apply; tables over JSON dumps; collapsed dense panels; PNG/JPEG/TIFF export via matplotlib (never Kaleido/Chrome).
+- Standalone updates: GitHub Releases check on launch; banner if newer **or if the check failed** (say why); optional zip install; `GITHUB_REPO` / `XPS_DECONV_GITHUB_REPO`.
 - End-user install: `standalone_version/install_xps_deconv.*` bootstrapper (latest zip → script folder).
 - Do not invent product rules — ask.

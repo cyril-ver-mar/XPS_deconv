@@ -10,12 +10,12 @@ Plot UX: `docs/AI-deployment/TASK_PLAYBOOKS/11_scientific_plots_ux.md`.
 
 - When the user locks a requirement, update DECISIONS (and this rule if it changes how code must be written).
 - Prefer the living architecture guide / playbook 11 over ad-hoc notebook patterns when they conflict.
-- Scientific plots: retain axis ranges on invert; Preview ≠ Apply; tables over JSON dumps; collapsed dense panels; PNG/JPEG/TIFF export (inches + DPI) in Plot settings.
-- Standalone updates: check GitHub Releases on launch; banner + release link; optional confirmed zip install (preserve `data/`/`venv/`); configure via `GITHUB_REPO`.
+- Scientific plots: retain axis ranges on invert; Preview ≠ Apply; tables over JSON dumps; collapsed dense panels; PNG/JPEG/TIFF export (inches + DPI) via matplotlib in Plot settings; plot style (fonts, axis names, colors, line widths) with live preview. Never launch Chrome/Kaleido for export.
+- Standalone updates: check GitHub Releases on launch; banner if newer **or if the check failed** (say why: no network / timeout / SSL / HTTP); optional confirmed zip install (preserve `data/`/`venv/`); configure via `GITHUB_REPO`.
 - End-user install: prefer `standalone_version/install_xps_deconv.*` (download latest into script folder after `YES`).
 - Default UI language is **Russian** (EN available in sidebar).
 - Page order: Home → Import → Interactive → analysis pages → Documentation → Settings.
 - Install/run scripts must stay scripts-first with clear, actionable errors.
-- `run.sh` / `run.bat` / `launch.py` check runtime imports and auto-install from `requirements.txt` if anything is missing.
+- `run.sh` / `run.bat` / `launch.py` check runtime imports, auto-install from `requirements.txt` if anything is missing, and uninstall obsolete packages listed in `OBSOLETE_PIP_PACKAGES` (e.g. kaleido).
 - App version: root `VERSION` + git tag `vX.Y.Z` (`src/utils/version.py`).
 - Do not invent product rules — ask.

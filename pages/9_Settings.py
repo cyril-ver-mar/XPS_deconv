@@ -29,9 +29,6 @@ st.write(f"{t('project_root', lang)}: `{PROJECT_ROOT}`")
 st.write(f"{t('data_dir', lang)}: `{DATA_DIR}`")
 st.write(f"{t('exports_dir', lang)}: `{EXPORTS_DIR}`")
 st.write(f"{t('language_label', lang)}: **{'Русский' if lang == 'ru' else 'English'}**")
-if lang == "ru":
-    st.caption("Пути вычисляются относительно папки приложения (без жёстко прошитых абсолютных адресов).")
-else:
-    st.caption("Paths are resolved relative to the app folder (no hardcoded machine paths).")
+st.caption(t("settings_paths_caption", lang))
 
 render_update_settings(lang)

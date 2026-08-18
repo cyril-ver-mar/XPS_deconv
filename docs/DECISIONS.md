@@ -1,7 +1,7 @@
 # Decisions — XPS-Deconv
 
 **App display name:** XPS-Deconv  
-**Last updated:** 2026-08-10  
+**Last updated:** 2026-08-18  
 **Version:** see root `VERSION` (semver). Git tags: `vMAJOR.MINOR.PATCH` (e.g. `v1.0.5`).
 
 ## Versioning (locked)
@@ -14,7 +14,7 @@
 | UI | Settings page shows the version |
 | Bump | PATCH = fixes/polish; MINOR = features; MAJOR = breaking |
 | Standalone | Rebuild with `python scripts/build_standalone.py` after a release bump; zip via `scripts/pack_standalone_release.py` and attach to the GitHub Release |
-| Update check | `GITHUB_REPO` (`owner/name`) or env `XPS_DECONV_GITHUB_REPO`; public Releases API |
+| Update check | `GITHUB_REPO` (`owner/name`) or env `XPS_DECONV_GITHUB_REPO`; public Releases API. Failures are classified (no network / timeout / SSL / HTTP / no releases) and shown in the banner + Settings — never silent. |
 | End-user install | Prefer `standalone_version/install_xps_deconv.{sh,bat,ps1}` — downloads latest release zip into the script’s folder (confirm `YES`); then `XPS-Deconv/install` + `run` |
 
 ## Locked
@@ -33,7 +33,8 @@
 | Constraints | Fixed FWHM, linked doublets, shared sigma — on/off + ❔ helpers |
 | Fit UX | Trace toggles, fill colors/alpha, R & R² & RMSE, fit sequence compare, interactive workspace |
 | Plot UX | Plot first; settings accordion collapsed below; invert X retains ranges; Y fit uses all series |
-| Plot export | Plot settings → PNG / JPEG / TIFF; size in inches + DPI (Kaleido + Pillow) |
+| Plot style | Plot settings → Style: titles, fonts, axis/line colors, widths; optional compact Y ticks; element BE region bands with color + label; live preview |
+| Plot export | Plot settings → PNG / JPEG / TIFF via **matplotlib** (Agg) + Pillow; never Kaleido/Chrome |
 | GitHub repo | `cyril-ver-mar/XPS_deconv` — **public** |
 | Update telemetry | Deferred — no per-device / time logging for now |
 | Bootstrap install | `standalone_version/` one-file installer → latest Release into script folder (YES confirm) |
@@ -42,7 +43,7 @@
 | Page order | Home → Import → Interactive → analysis → Documentation → Settings |
 | In-app docs | `pages/10_Documentation.py` reads `docs/USER_GUIDE(_ru).md` |
 | Install UX | `install`/`run` `.sh`/`.bat`: Claude-style banner, steps, actionable errors |
-| Run deps | `run.sh` / `run.bat` / `launch.py` check runtime imports; auto `pip install -r requirements.txt` if missing (incl. kaleido) |
+| Run deps | `run.sh` / `run.bat` / `launch.py` check runtime imports; auto-install missing; **uninstall obsolete** packages (e.g. kaleido) from the venv |
 | Interactive UI | Denoise / Baseline / Model / Peaks expanders **collapsed by default**; uncertainty+PV sum panel |
 | Storage | JSON projects in `data/projects/` + SQLite index; sessions/exports as before |
 | Secrets | None required |

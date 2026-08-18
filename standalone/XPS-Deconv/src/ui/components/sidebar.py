@@ -36,6 +36,6 @@ def render_sidebar() -> str:
         st.sidebar.write(t("stopping", choice))
         os.kill(os.getpid(), signal.SIGTERM)
 
-    # Once per launch: network check; banner only if newer release exists
+    # Once per launch: network check; banner if newer release or if the check failed
     render_update_banner(choice)
     return choice

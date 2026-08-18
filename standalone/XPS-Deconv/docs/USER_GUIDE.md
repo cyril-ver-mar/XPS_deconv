@@ -57,3 +57,5 @@ Use ❔ helpers next to parameters.
 | Port 8501 busy | Stop other Streamlit |
 | Browser did not open | Open http://localhost:8501 manually |
 | Update available | Banner on launch; or Settings → Updates |
+| Cannot check GitHub | Banner names the reason (no network / timeout / SSL / HTTP); Settings → Updates → Check now |
+| Plot style | Plot settings → Style (fonts, axis names, colors, widths — live preview) |

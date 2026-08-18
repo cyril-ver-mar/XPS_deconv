@@ -27,7 +27,7 @@ init_session_state()
 lang = render_sidebar()
 
 st.header(t("projects_spectra", lang))
-labeled_help("What is a project?", "project", lang)
+labeled_help(t("what_is_project", lang), "project", lang)
 
 # --- Create / load project ---
 st.subheader(t("project_section", lang))
@@ -38,24 +38,33 @@ with c1:
     if st.button(t("create_project", lang), type="primary"):
         proj = project_service.create_project(new_name)
         set_project(proj)
-        st.success(f"Created {proj.name}")
+        st.success(t("created_project", lang, name=proj.name))
         st.rerun()
 with c2:
     if rows:
-        labels = {r["id"]: f"{r['name']} ({r['n_spectra']} spectra) — {r['updated_at'][:19]}" for r in rows}
+        labels = {
+            r["id"]: t(
+                "project_list_item",
+                lang,
+                name=r["name"],
+                n=r["n_spectra"],
+                updated=r["updated_at"][:19],
+            )
+            for r in rows
+        }
         pid = st.selectbox(t("load_existing", lang), options=list(labels.keys()), format_func=lambda i: labels[i])
         b1, b2 = st.columns(2)
         with b1:
             if st.button(t("load_project", lang)):
                 set_project(project_service.load_project(pid))
-                st.success("Project loaded")
+                st.success(t("project_loaded", lang))
                 st.rerun()
         with b2:
             if st.button(t("delete_project", lang)):
                 project_service.delete_project(pid)
                 if get_project() and get_project().id == pid:
                     st.session_state["project"] = None
-                st.warning("Deleted")
+                st.warning(t("deleted_ok", lang))
                 st.rerun()
     else:
         st.caption(t("no_projects", lang))
@@ -65,12 +74,14 @@ if project is None:
     st.info(t("need_project", lang))
     st.stop()
 
-st.success(f"Active project: **{project.name}** (`{project.id}`) — {len(project.spectra)} spectra")
+st.success(
+    t("active_project", lang, name=project.name, id=project.id, n=len(project.spectra))
+)
 notes = st.text_area(t("project_notes", lang), value=project.notes)
 if st.button(t("save_notes", lang)):
     project.notes = notes
     project_service.save_project(project)
-    st.toast("Saved")
+    st.toast(t("saved_ok", lang))
 
 # --- Upload many VGDs ---
 st.subheader(t("upload_section", lang))
@@ -101,7 +112,7 @@ if st.button(t("add_files", lang)):
         except Exception as exc:  # noqa: BLE001
             errors.append(f"{path}: {exc}")
     set_project(project_service.load_project(project.id))
-    st.success(f"Added {added} spectrum(s)")
+    st.success(t("added_spectra", lang, n=added))
     for e in errors:
         st.error(e)
     st.rerun()
@@ -110,26 +121,26 @@ project = get_project()
 assert project is not None
 
 # --- Choose active spectrum ---
-st.subheader("3. Choose spectrum to analyse")
+st.subheader(t("pick_spectrum", lang))
 if not project.spectra:
-    st.warning("No spectra in this project yet.")
+    st.warning(t("no_spectra_yet", lang))
     st.stop()
 
 options = {s.id: s.label for s in project.spectra}
 active_id = project.active_spectrum_id or project.spectra[0].id
 idx = list(options.keys()).index(active_id) if active_id in options else 0
 chosen = st.selectbox(
-    "Active spectrum",
+    t("active_spectrum", lang),
     options=list(options.keys()),
     format_func=lambda i: options[i],
     index=idx,
 )
-if st.button("Set as active for analysis", type="primary"):
+if st.button(t("set_active", lang), type="primary"):
     persist_session_to_active(save_disk=True)
     project_service.set_active_spectrum(project, chosen)
     set_project(project_service.load_project(project.id))
     sync_active_to_session()
-    st.success("Active spectrum set — continue on Region / Baseline / Deconvolution / Workspace")
+    st.success(t("active_spectrum_set", lang))
     st.rerun()
 
 entry = next(s for s in project.spectra if s.id == (project.active_spectrum_id or chosen))

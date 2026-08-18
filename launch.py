@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Launch Streamlit XPS-Deconv with clear errors.
 
-On start: check runtime deps and install from requirements.txt if anything is missing.
+On start: prune unused packages, then install from requirements.txt if anything is missing.
 """
 
 from __future__ import annotations

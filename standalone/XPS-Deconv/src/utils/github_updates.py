@@ -13,6 +13,8 @@ import json
 import logging
 import os
 import re
+import socket
+import ssl
 import subprocess
 import urllib.error
 import urllib.request
@@ -29,6 +31,17 @@ logger = logging.getLogger(__name__)
 USER_AGENT = "XPS-Deconv-updater"
 API_TIMEOUT_S = 8.0
 PREFERRED_ASSET_SUBSTR = ("standalone", "xps-deconv")
+
+# Stable codes for UI i18n (never mix several failure modes into one message).
+ERR_NOT_CONFIGURED = "not_configured"
+ERR_NETWORK = "network"
+ERR_TIMEOUT = "timeout"
+ERR_SSL = "ssl"
+ERR_HTTP_404 = "http_404"
+ERR_HTTP_403 = "http_403"
+ERR_HTTP = "http"
+ERR_BAD_RESPONSE = "bad_response"
+ERR_UNEXPECTED = "unexpected"
 
 
 @dataclass(frozen=True)
@@ -128,11 +141,70 @@ def _pick_zip_asset(assets: list[dict]) -> tuple[Optional[str], Optional[str]]:
     return str(best["browser_download_url"]), str(best.get("name") or "update.zip")
 
 
+def classify_github_error(exc: BaseException) -> tuple[str, str]:
+    """Map a network/parse exception to ``(error_code, technical_detail)``."""
+    if isinstance(exc, urllib.error.HTTPError):
+        code = int(exc.code)
+        reason = str(exc.reason or "")
+        detail = f"HTTP {code}" + (f": {reason}" if reason else "")
+        if code == 404:
+            return ERR_HTTP_404, detail
+        if code == 403:
+            headers = getattr(exc, "headers", None)
+            remaining = ""
+            if headers is not None:
+                remaining = str(headers.get("X-RateLimit-Remaining") or "")
+            if remaining == "0":
+                return ERR_HTTP_403, f"{detail} (rate limit)"
+            return ERR_HTTP_403, detail
+        return ERR_HTTP, detail
+
+    if isinstance(exc, TimeoutError) or isinstance(exc, socket.timeout):
+        return ERR_TIMEOUT, str(exc) or "timed out"
+
+    if isinstance(exc, ssl.SSLError):
+        return ERR_SSL, str(exc)
+
+    if isinstance(exc, urllib.error.URLError):
+        reason = exc.reason
+        if isinstance(reason, (TimeoutError, socket.timeout)):
+            return ERR_TIMEOUT, str(reason)
+        if isinstance(reason, ssl.SSLError):
+            return ERR_SSL, str(reason)
+        text = str(reason or exc).lower()
+        if "timed out" in text or "timeout" in text:
+            return ERR_TIMEOUT, str(reason or exc)
+        if "ssl" in text or "certificate" in text:
+            return ERR_SSL, str(reason or exc)
+        return ERR_NETWORK, str(reason or exc)
+
+    if isinstance(exc, json.JSONDecodeError):
+        return ERR_BAD_RESPONSE, str(exc)
+
+    if isinstance(exc, OSError):
+        text = str(exc).lower()
+        if "timed out" in text:
+            return ERR_TIMEOUT, str(exc)
+        if "ssl" in text or "certificate" in text:
+            return ERR_SSL, str(exc)
+        return ERR_NETWORK, str(exc)
+
+    return ERR_UNEXPECTED, str(exc)
+
+
 def fetch_latest_release(repo: str) -> Optional[ReleaseInfo]:
     """GET ``/repos/{repo}/releases/latest``. Returns None on any failure."""
+    release, _code, _detail = fetch_latest_release_outcome(repo)
+    return release
+
+
+def fetch_latest_release_outcome(
+    repo: str,
+) -> tuple[Optional[ReleaseInfo], Optional[str], str]:
+    """Return ``(release, error_code, detail)``. ``error_code`` is None on success."""
     repo = _normalize_repo(repo) or ""
     if not repo:
-        return None
+        return None, ERR_NOT_CONFIGURED, "empty repo id"
     url = f"https://api.github.com/repos/{repo}/releases/latest"
     req = urllib.request.Request(
         url,
@@ -146,22 +218,29 @@ def fetch_latest_release(repo: str) -> Optional[ReleaseInfo]:
     try:
         with urllib.request.urlopen(req, timeout=API_TIMEOUT_S) as resp:
             payload = json.loads(resp.read().decode("utf-8"))
-    except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, json.JSONDecodeError, OSError) as exc:
-        logger.info("GitHub release check skipped/failed for %s: %s", repo, exc)
-        return None
+    except Exception as exc:  # classified below — never raise to UI
+        code, detail = classify_github_error(exc)
+        logger.warning("GitHub release check failed for %s [%s]: %s", repo, code, detail)
+        return None, code, detail
     if not isinstance(payload, dict):
-        return None
+        return None, ERR_BAD_RESPONSE, "latest release payload is not an object"
     tag = str(payload.get("tag_name") or "")
+    if not tag:
+        return None, ERR_BAD_RESPONSE, "latest release has no tag_name"
     version = tag.lstrip("vV")
     zip_url, zip_name = _pick_zip_asset(list(payload.get("assets") or []))
     html_url = str(payload.get("html_url") or f"https://github.com/{repo}/releases/latest")
-    return ReleaseInfo(
-        tag=tag,
-        version=version,
-        html_url=html_url,
-        zip_url=zip_url,
-        zip_name=zip_name,
-        name=str(payload.get("name") or tag),
+    return (
+        ReleaseInfo(
+            tag=tag,
+            version=version,
+            html_url=html_url,
+            zip_url=zip_url,
+            zip_name=zip_name,
+            name=str(payload.get("name") or tag),
+        ),
+        None,
+        "",
     )
 
 
@@ -173,10 +252,11 @@ class UpdateStatus:
     latest: Optional[ReleaseInfo]
     repo: Optional[str]
     message: str = ""
+    error_code: Optional[str] = None
 
 
 def check_for_update(local_version: Optional[str] = None, root: Optional[Path] = None) -> UpdateStatus:
-    """Compare local VERSION to GitHub latest release (network; fail soft)."""
+    """Compare local VERSION to GitHub latest release (network; typed errors)."""
     local = (local_version or get_version()).strip()
     repo = resolve_github_repo(root)
     if not repo:
@@ -187,8 +267,9 @@ def check_for_update(local_version: Optional[str] = None, root: Optional[Path] =
             latest=None,
             repo=None,
             message="GitHub repo not configured",
+            error_code=ERR_NOT_CONFIGURED,
         )
-    latest = fetch_latest_release(repo)
+    latest, err, detail = fetch_latest_release_outcome(repo)
     if latest is None:
         return UpdateStatus(
             configured=True,
@@ -196,7 +277,8 @@ def check_for_update(local_version: Optional[str] = None, root: Optional[Path] =
             update_available=False,
             latest=None,
             repo=repo,
-            message="Could not reach GitHub or no releases",
+            message=detail or "Could not fetch latest release",
+            error_code=err or ERR_UNEXPECTED,
         )
     newer = is_newer(latest.version, local)
     return UpdateStatus(
@@ -206,4 +288,5 @@ def check_for_update(local_version: Optional[str] = None, root: Optional[Path] =
         latest=latest,
         repo=repo,
         message="update available" if newer else "up to date",
+        error_code=None,
     )

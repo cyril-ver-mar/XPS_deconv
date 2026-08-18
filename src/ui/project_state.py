@@ -7,9 +7,55 @@ from typing import Optional
 import numpy as np
 import streamlit as st
 
-from src.core.project import AnalysisProject, FitSnapshot, SpectrumEntry
+from src.core.project import AnalysisProject, FitSnapshot
 from src.core.region import crop_spectrum
 from src.services import project_service
+
+
+WORKING_CURVE_KEYS = (
+    "corrected",
+    "baseline",
+    "smoothed",
+    "best_fit",
+    "previous_fit",
+    "peaks_df",
+    "metrics",
+    "fit_components",
+)
+
+PREVIEW_KEYS = (
+    "preview_smoothed",
+    "preview_corrected",
+    "preview_baseline",
+    "preview_settings",
+    "preview_noise_method",
+    "preview_noise_window",
+    "preview_savgol_poly",
+)
+
+
+def clear_transient_analysis_curves() -> None:
+    """Drop overlay curves that must not follow a newly selected spectrum."""
+    for key in WORKING_CURVE_KEYS:
+        st.session_state[key] = None
+    for key in PREVIEW_KEYS:
+        st.session_state.pop(key, None)
+
+
+def reset_plot_range_flags() -> None:
+    """Let spectrum viewers re-fit axis ranges to the new active data."""
+    for key in list(st.session_state.keys()):
+        if str(key).endswith("_ranges_initialized"):
+            st.session_state.pop(key, None)
+
+
+def _array_matches(values: object, n: int) -> Optional[np.ndarray]:
+    if values is None:
+        return None
+    arr = np.asarray(values, dtype=float)
+    if arr.size != n:
+        return None
+    return arr
 
 
 def get_project() -> Optional[AnalysisProject]:
@@ -63,29 +109,33 @@ def sync_active_to_session() -> None:
     st.session_state["fit_history"] = list(entry.fit_history)
     st.session_state["saved_fits"] = dict(entry.saved_fits)
     st.session_state["last_fit_id"] = entry.last_fit_id
+    st.session_state["active_entry_id"] = entry.id
 
-    # Restore last fit curves if present
+    clear_transient_analysis_curves()
+    reset_plot_range_flags()
+
     last = None
     if entry.last_fit_id:
         last = next((f for f in entry.fit_history if f.id == entry.last_fit_id), None)
         if last is None:
             last = entry.saved_fits.get(entry.last_fit_id)
-    if last is not None:
-        st.session_state["corrected"] = None if last.corrected is None else np.asarray(last.corrected)
-        st.session_state["baseline"] = None if last.baseline is None else np.asarray(last.baseline)
-        st.session_state["smoothed"] = None if last.smoothed is None else np.asarray(last.smoothed)
-        st.session_state["best_fit"] = None if last.best_fit is None else np.asarray(last.best_fit)
-        st.session_state["metrics"] = last.metrics
-        if last.peaks_table:
-            import pandas as pd
+    if last is None:
+        return
 
-            st.session_state["peaks_df"] = pd.DataFrame(last.peaks_table)
-        if last.components:
-            st.session_state["fit_components"] = [np.asarray(c) for c in last.components]
-        st.session_state["previous_fit"] = st.session_state.get("previous_fit")
-    else:
-        for k in ("corrected", "baseline", "smoothed", "best_fit", "peaks_df", "metrics", "fit_components"):
-            st.session_state[k] = None
+    n = int(np.asarray(st.session_state["active_spectrum"].binding_energy).size)
+    st.session_state["corrected"] = _array_matches(last.corrected, n)
+    st.session_state["baseline"] = _array_matches(last.baseline, n)
+    st.session_state["smoothed"] = _array_matches(last.smoothed, n)
+    st.session_state["best_fit"] = _array_matches(last.best_fit, n)
+    st.session_state["metrics"] = last.metrics
+    if last.peaks_table:
+        import pandas as pd
+
+        st.session_state["peaks_df"] = pd.DataFrame(last.peaks_table)
+    if last.components:
+        comps = [_array_matches(c, n) for c in last.components]
+        if any(c is not None for c in comps):
+            st.session_state["fit_components"] = comps
 
 
 def persist_session_to_active(*, save_disk: bool = True) -> None:

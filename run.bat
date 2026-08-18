@@ -73,7 +73,7 @@ if not exist requirements.txt (
 
 call "venv\Scripts\activate.bat"
 echo   %C_OK%✓%C_RESET% venv ready
-echo   %C_ACCENT%-^>%C_RESET% checking packages (install missing from requirements.txt)...
+echo   %C_ACCENT%-^>%C_RESET% checking packages (install missing, remove unused)...
 set PYTHONPATH=%CD%
 python -m src.utils.deps_check --ensure
 if errorlevel 1 (

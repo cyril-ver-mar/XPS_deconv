@@ -14,6 +14,7 @@ from src.core.local_stats import (
 )
 from src.core.models import PeakConfig
 from src.ui.components.plots import DEFAULT_COMPONENT_COLORS, SAFE_PLOT_LEGEND, SAFE_PLOT_MARGIN
+from src.utils.i18n import DEFAULT_LANG, t
 
 
 def _guess_height(be: np.ndarray, y: np.ndarray, center: float, half_width: float = 1.5) -> float:
@@ -70,7 +71,8 @@ def mean_uncertainty_peaks_figure(
     window: int = 7,
     n_sigma: float = 1.0,
     invert_x: bool = True,
-    title: str = "Local mean / uncertainty + PseudoVoigt selection",
+    title: str = "",
+    lang: str = DEFAULT_LANG,
 ) -> Tuple[go.Figure, float, int, int]:
     """Black=original, red=local mean, green=±uncertainty, peaks + selected sum.
 
@@ -101,7 +103,7 @@ def mean_uncertainty_peaks_figure(
             x=be,
             y=upper,
             mode="lines",
-            name=f"Upper (+{n_sigma:g}σ local)",
+            name=t("uncert_upper", lang, n=f"{n_sigma:g}"),
             line=dict(color="#2ca02c", width=1.5),
         )
     )
@@ -110,7 +112,7 @@ def mean_uncertainty_peaks_figure(
             x=be,
             y=lower,
             mode="lines",
-            name=f"Lower (−{n_sigma:g}σ local)",
+            name=t("uncert_lower", lang, n=f"{n_sigma:g}"),
             line=dict(color="#2ca02c", width=1.5),
             fill="tonexty",
             fillcolor="rgba(44, 160, 44, 0.12)",
@@ -121,7 +123,7 @@ def mean_uncertainty_peaks_figure(
             x=be,
             y=y,
             mode="lines",
-            name="Original",
+            name=t("uncert_original", lang),
             line=dict(color="#111111", width=1.2),
         )
     )
@@ -130,7 +132,7 @@ def mean_uncertainty_peaks_figure(
             x=be,
             y=mean,
             mode="lines",
-            name="Local mean",
+            name=t("uncert_local_mean", lang),
             line=dict(color="#d62728", width=2.5),
         )
     )
@@ -152,7 +154,7 @@ def mean_uncertainty_peaks_figure(
             x=be,
             y=peak_sum,
             mode="lines",
-            name="Sum of selected peaks",
+            name=t("uncert_sum_selected", lang),
             line=dict(color="#9467bd", width=3),
         )
     )
@@ -166,15 +168,15 @@ def mean_uncertainty_peaks_figure(
                     x=be,
                     y=bf,
                     mode="lines",
-                    name="Total fit (deconv)",
+                    name=t("uncert_total_fit", lang),
                     line=dict(color="#000000", width=2.5, dash="dash"),
                 )
             )
 
     fig.update_layout(
         title=dict(text=title or "", y=0.98, pad=dict(t=4, b=8)) if title else None,
-        xaxis_title="Binding energy (eV)",
-        yaxis_title="Intensity",
+        xaxis_title=t("plot_default_x", lang),
+        yaxis_title=t("plot_default_y", lang),
         template="plotly_white",
         legend=SAFE_PLOT_LEGEND,
         margin=SAFE_PLOT_MARGIN,
@@ -213,7 +215,17 @@ def render_mean_uncertainty_panel(
     ns_key = f"{widget_prefix}_uncert_ns"
 
     if peak_list:
-        peak_labels = [f"{i}: {p.name} @ {p.center:.2f} eV" for i, p in enumerate(peak_list)]
+        peak_labels = [
+            t(
+                "uncert_peak_at",
+                lang,
+                i=i,
+                name=p.name,
+                center=p.center,
+                unit=t("unit_ev", lang),
+            )
+            for i, p in enumerate(peak_list)
+        ]
         prev = st.session_state.get(sel_key)
         if prev is None or any(lab not in peak_labels for lab in (prev or [])):
             st.session_state[sel_key] = peak_labels
@@ -248,6 +260,7 @@ def render_mean_uncertainty_panel(
         n_sigma=float(uncert_nsigma),
         invert_x=bool(invert_x),
         title="",  # Streamlit subheader already names this panel
+        lang=lang,
     )
     m1.metric(
         t("uncert_metric", lang, n=f"{float(uncert_nsigma):g}"),

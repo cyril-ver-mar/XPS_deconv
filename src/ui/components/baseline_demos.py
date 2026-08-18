@@ -10,6 +10,7 @@ from plotly.subplots import make_subplots
 
 from src.core.baseline import compute_baseline
 from src.core.models import BASELINE_METHODS, BaselineSettings
+from src.utils.i18n import DEFAULT_LANG, t
 
 
 def make_demo_spectrum(n: int = 250) -> Tuple[np.ndarray, np.ndarray]:
@@ -23,7 +24,7 @@ def make_demo_spectrum(n: int = 250) -> Tuple[np.ndarray, np.ndarray]:
     return be, bg + peak1 + peak2 + noise
 
 
-def baseline_demo_figure(methods: tuple[str, ...] | None = None) -> go.Figure:
+def baseline_demo_figure(methods: tuple[str, ...] | None = None, lang: str = DEFAULT_LANG) -> go.Figure:
     be, y = make_demo_spectrum()
     methods = methods or tuple(m for m in BASELINE_METHODS if m != "none")
     cols = 2
@@ -60,11 +61,15 @@ def baseline_demo_figure(methods: tuple[str, ...] | None = None) -> go.Figure:
         fig.update_xaxes(autorange="reversed", row=r + 1, col=c + 1)
     fig.update_layout(
         height=220 * rows,
-        title="Baseline methods on a synthetic demo spectrum (blue=data, red=baseline)",
+        title=t("baseline_demo_title", lang),
         template="plotly_white",
         margin=dict(l=30, r=20, t=60, b=30),
     )
     return fig
+
+
+def baseline_blurb(method: str, lang: str = DEFAULT_LANG) -> str:
+    return t(f"blurb_{method}", lang)
 
 
 BASELINE_METHOD_BLURBS: Dict[str, str] = {

@@ -24,8 +24,14 @@ RUNTIME_DEPS: tuple[tuple[str, str], ...] = (
     ("olefile", "olefile"),
     ("openpyxl", "openpyxl"),
     ("plotly", "plotly"),
-    ("kaleido", "kaleido"),
     ("PIL", "pillow"),
+)
+
+# Pip names that used to be required and must be removed from old venvs.
+# kaleido launched Chrome on export; choreographer is its v1 helper.
+OBSOLETE_PIP_PACKAGES: tuple[str, ...] = (
+    "kaleido",
+    "choreographer",
 )
 
 
@@ -49,6 +55,60 @@ def check_runtime_deps(deps: Sequence[tuple[str, str]] = RUNTIME_DEPS) -> List[M
 
 def _default_requirements_path() -> Path:
     return Path(__file__).resolve().parents[2] / "requirements.txt"
+
+
+def freeze_pip_names(python_executable: Optional[str] = None) -> set[str]:
+    """Installed distribution names (lowercase) from ``pip freeze``."""
+    py = python_executable or sys.executable
+    proc = subprocess.run(
+        [py, "-m", "pip", "freeze"],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    if proc.returncode != 0:
+        return set()
+    names: set[str] = set()
+    for raw in (proc.stdout or "").splitlines():
+        line = raw.strip()
+        if not line or line.startswith("#"):
+            continue
+        name = line
+        for sep in ("===", "==", ">=", "<=", "~=", "!=", "@"):
+            if sep in name:
+                name = name.split(sep, 1)[0]
+                break
+        name = name.strip().lower().replace("_", "-")
+        if name:
+            names.add(name)
+    return names
+
+
+def prune_obsolete_packages(
+    *,
+    python_executable: Optional[str] = None,
+    obsolete: Sequence[str] = OBSOLETE_PIP_PACKAGES,
+) -> list[str]:
+    """Uninstall leftover packages (e.g. kaleido). Never raises; returns removed names."""
+    py = python_executable or sys.executable
+    installed = freeze_pip_names(py)
+    to_remove = [p for p in obsolete if p.lower().replace("_", "-") in installed]
+    if not to_remove:
+        return []
+    print("Removing unused packages: " + ", ".join(to_remove), flush=True)
+    proc = subprocess.run(
+        [py, "-m", "pip", "uninstall", "-y", *to_remove],
+        check=False,
+    )
+    if proc.returncode != 0:
+        print(
+            "WARNING: could not uninstall " + ", ".join(to_remove),
+            file=sys.stderr,
+            flush=True,
+        )
+        return []
+    print("Removed unused packages: " + ", ".join(to_remove), flush=True)
+    return list(to_remove)
 
 
 def install_requirements(
@@ -80,6 +140,7 @@ def ensure_runtime_deps(
 
     Returns still-missing deps (empty list = OK).
     """
+    prune_obsolete_packages(python_executable=python_executable)
     missing = check_runtime_deps()
     if not missing:
         return []
@@ -116,8 +177,6 @@ def format_cli_message(missing: Iterable[MissingDep]) -> str:
             "  · Windows:     run.bat   (auto-installs from requirements.txt)",
             "  · Or: ./install.sh / install.bat",
             "  · Or activate venv and run: pip install -r requirements.txt",
-            "",
-            "If you installed before kaleido was added, re-run install/run — do not skip.",
         ]
     )
     return "\n".join(lines)
@@ -125,6 +184,7 @@ def format_cli_message(missing: Iterable[MissingDep]) -> str:
 
 def exit_if_missing_cli() -> None:
     """Print and exit with code 1 when deps are missing (for scripts / -m)."""
+    prune_obsolete_packages()
     missing = check_runtime_deps()
     if missing:
         print(format_cli_message(missing), file=sys.stderr)
@@ -132,7 +192,7 @@ def exit_if_missing_cli() -> None:
 
 
 def exit_if_ensure_failed() -> None:
-    """Install missing deps from requirements.txt, then exit 1 if still missing."""
+    """Prune obsolete packages, install missing deps, then exit 1 if still missing."""
     missing = ensure_runtime_deps(install_if_missing=True)
     if missing:
         print(format_cli_message(missing), file=sys.stderr)

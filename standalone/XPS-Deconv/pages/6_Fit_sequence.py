@@ -11,11 +11,11 @@ if str(ROOT) not in sys.path:
 
 import numpy as np
 import pandas as pd
+import plotly.graph_objects as go
 import streamlit as st
 
-from src.ui.components.plots import SAFE_PLOT_LEGEND, SAFE_PLOT_MARGIN, PlotViewState, spectrum_figure
+from src.ui.components.plots import SAFE_PLOT_LEGEND, SAFE_PLOT_MARGIN
 from src.ui.components.sidebar import render_sidebar
-from src.ui.components.spectrum_viewer import render_spectrum_viewer
 from src.ui.session_keys import init_session_state
 from src.utils.i18n import t
 from src.utils.paths import ensure_runtime_dirs
@@ -57,19 +57,14 @@ st.dataframe(pd.DataFrame(rows), use_container_width=True)
 ids = [s.id for s in history]
 label_map = {s.id: f"{s.label} ({s.id})" for s in history}
 picked = st.multiselect(
-    "Show fits on plot",
+    t("show_fits_on_plot", lang),
     options=ids,
     default=ids[-min(3, len(ids)) :],
     format_func=lambda i: label_map[i],
 )
 
-view = PlotViewState(invert_x=True)
-fig = spectrum_figure(sp.binding_energy, sp.intensity, title="Sequence overlay", view=view)
-# rebuild with multiple best_fits manually
-import plotly.graph_objects as go
-
 fig = go.Figure()
-fig.add_trace(go.Scatter(x=sp.binding_energy, y=sp.intensity, name="Spectrum", line=dict(color="#1f77b4")))
+fig.add_trace(go.Scatter(x=sp.binding_energy, y=sp.intensity, name=t("trace_spectrum", lang), line=dict(color="#1f77b4")))
 colors = ["#111", "#e41a1c", "#4daf4a", "#984ea3", "#ff7f00", "#a65628"]
 for i, sid in enumerate(picked):
     snap = next(s for s in history if s.id == sid)
@@ -89,13 +84,15 @@ fig.update_layout(
     title=None,
     legend=SAFE_PLOT_LEGEND,
     margin=SAFE_PLOT_MARGIN,
+    xaxis_title=t("plot_default_x", lang),
+    yaxis_title=t("plot_default_y", lang),
 )
 fig.update_xaxes(autorange="reversed")
-st.markdown("**Selected fits overlay**")
+st.markdown(f"**{t('selected_fits_overlay', lang)}**")
 st.markdown('<div style="height: 0.5rem;"></div>', unsafe_allow_html=True)
 st.plotly_chart(fig, use_container_width=True)
 
-detail_id = st.selectbox("Peak table for", options=ids, format_func=lambda i: label_map[i], index=len(ids) - 1)
+detail_id = st.selectbox(t("peak_table_for", lang), options=ids, format_func=lambda i: label_map[i], index=len(ids) - 1)
 snap = next(s for s in history if s.id == detail_id)
 if snap.peaks_table:
     st.dataframe(pd.DataFrame(snap.peaks_table), use_container_width=True)
@@ -107,7 +104,7 @@ if snap.metrics:
     c.metric("RMSE", f"{m.get('rmse', float('nan')):.3f}")
     d.metric("χ²_red", f"{m.get('chi_square', float('nan'))}")
 
-if st.button("Load this fit into workspace (curves + peaks)"):
+if st.button(t("load_fit_workspace", lang)):
     st.session_state["peak_configs"] = list(snap.peak_configs)
     st.session_state["peak_model"] = snap.peak_model
     st.session_state["baseline_settings"] = snap.baseline_settings
@@ -126,4 +123,4 @@ if st.button("Load this fit into workspace (curves + peaks)"):
     if snap.peaks_table:
         st.session_state["peaks_df"] = pd.DataFrame(snap.peaks_table)
     st.session_state["last_fit_id"] = snap.id
-    st.success("Loaded into session — open Deconvolution or Interactive workspace")
+    st.success(t("loaded_into_session", lang))

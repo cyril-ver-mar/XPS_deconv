@@ -167,3 +167,55 @@ REGION_PRESETS: Dict[str, BeWindow] = {
     "Si2p (95-110 eV)": (95.0, 110.0),
     "Ca2p (340-355 eV)": (340.0, 355.0),
 }
+
+_BAND_PALETTE = (
+    "#6aa6de",
+    "#e07a6a",
+    "#6cb56c",
+    "#d4b84a",
+    "#9b7ec9",
+    "#5bbbb0",
+    "#e09a4a",
+    "#888888",
+    "#c76b9a",
+    "#7a9fd4",
+    "#b5c96c",
+    "#d48a6a",
+    "#6a8ed4",
+    "#c9a06c",
+    "#8a6ec9",
+    "#4aa0c9",
+    "#c96c6c",
+    "#6cb58a",
+)
+
+
+@dataclass(frozen=True)
+class ElementBeBand:
+    """Typical core-level BE window for plot overlays."""
+
+    band_id: str
+    label: str
+    x0: float
+    x1: float
+    default_color: str
+
+
+def _element_be_bands() -> tuple[ElementBeBand, ...]:
+    bands: list[ElementBeBand] = []
+    for i, (key, window) in enumerate(REGION_PRESETS.items()):
+        label = key.split("(")[0].strip()
+        lo, hi = window
+        bands.append(
+            ElementBeBand(
+                band_id=label.lower().replace(" ", "_"),
+                label=label,
+                x0=float(lo),
+                x1=float(hi),
+                default_color=_BAND_PALETTE[i % len(_BAND_PALETTE)],
+            )
+        )
+    return tuple(bands)
+
+
+ELEMENT_BE_BANDS: tuple[ElementBeBand, ...] = _element_be_bands()

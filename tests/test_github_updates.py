@@ -3,15 +3,26 @@
 from __future__ import annotations
 
 import io
+import json
+import ssl
+import urllib.error
 import zipfile
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 
 from src.services.app_updater import apply_standalone_zip
 from src.utils.github_updates import (
+    ERR_HTTP_403,
+    ERR_HTTP_404,
+    ERR_NETWORK,
+    ERR_SSL,
+    ERR_TIMEOUT,
     _normalize_repo,
     _pick_zip_asset,
+    check_for_update,
+    classify_github_error,
     is_newer,
     parse_semver,
     resolve_github_repo,
@@ -78,3 +89,38 @@ def test_apply_preserves_data(tmp_path: Path) -> None:
     assert (app / "app.py").read_text(encoding="utf-8").strip() == "NEW"
     assert keep.read_text(encoding="utf-8").startswith("{")
     assert (app / "src" / "marker.txt").is_file()
+
+
+def test_classify_network_timeout_ssl_http() -> None:
+    code, _ = classify_github_error(urllib.error.URLError("Name or service not known"))
+    assert code == ERR_NETWORK
+    code, _ = classify_github_error(TimeoutError("timed out"))
+    assert code == ERR_TIMEOUT
+    code, _ = classify_github_error(ssl.SSLError("CERTIFICATE_VERIFY_FAILED"))
+    assert code == ERR_SSL
+    http404 = urllib.error.HTTPError("https://api.github.com/x", 404, "Not Found", hdrs=None, fp=None)
+    assert classify_github_error(http404)[0] == ERR_HTTP_404
+    http403 = urllib.error.HTTPError("https://api.github.com/x", 403, "Forbidden", hdrs=None, fp=None)
+    assert classify_github_error(http403)[0] == ERR_HTTP_403
+    assert classify_github_error(json.JSONDecodeError("x", "", 0))[0] == "bad_response"
+
+
+def test_check_for_update_keeps_typed_network_error(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("XPS_DECONV_GITHUB_REPO", raising=False)
+    (tmp_path / "GITHUB_REPO").write_text("acme/demo-app\n", encoding="utf-8")
+    with patch(
+        "src.utils.github_updates.fetch_latest_release_outcome",
+        return_value=(None, ERR_NETWORK, "Name or service not known"),
+    ):
+        status = check_for_update(local_version="1.0.6", root=tmp_path)
+    assert status.configured is True
+    assert status.update_available is False
+    assert status.error_code == ERR_NETWORK
+    assert "Name or service not known" in status.message
+
+
+def test_check_for_update_not_configured(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("XPS_DECONV_GITHUB_REPO", raising=False)
+    status = check_for_update(local_version="1.0.6", root=tmp_path)
+    assert status.configured is False
+    assert status.error_code == "not_configured"

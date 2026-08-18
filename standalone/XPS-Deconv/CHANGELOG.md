@@ -3,6 +3,25 @@
 All notable changes to **XPS-Deconv** are listed here.  
 Version source of truth: root [`VERSION`](VERSION). Git tags: `vMAJOR.MINOR.PATCH`.
 
+## [1.0.7] — 2026-08-18
+
+### Added
+- **Plot settings → Style**: live preview for fonts, axis names, colors, line widths, grid (major + minor).
+- **Plot settings → Export**: PNG / JPEG / TIFF via matplotlib (no Chrome/Kaleido); export matches preview styling.
+- **Element BE region overlays** with per-band color and label above the band.
+- Optional **compact Y-axis ticks** (25k-style); off by default (full numbers for Russian UI).
+- **Peak BE labels** at component maxima with configurable decimal digits (Deconvolution / Interactive).
+- Full **EN/RU i18n** for pages, plot legends, axis defaults, and help texts.
+- **Update-check failure banner** with typed messages (network, timeout, SSL, HTTP) on launch and in Settings.
+- **`OBSOLETE_PIP_PACKAGES`**: auto-uninstall kaleido/choreographer on launch/install.
+
+### Fixed
+- **Stale baseline/fit curves** when switching active spectrum — overlays cleared and length-checked.
+- Plot export fonts, grid, and proportions aligned with Streamlit preview.
+
+### Changed
+- Kaleido removed from runtime dependencies; raster export is matplotlib-only.
+
 ## [1.0.6] — 2026-08-13
 
 ### Added

@@ -130,8 +130,9 @@ Do not commit `venv/`, secrets, or bulky runtime data.
 | Port 8501 busy | Stop the other Streamlit, or set `STREAMLIT_SERVER_PORT` |
 | Import errors after pull | Re-run install to refresh dependencies |
 | Plot Y range wrong after fit | Use **Fit all data in view** under Plot settings |
-| Need publication figure | **Plot settings → Export graph**: PNG / JPEG / TIFF, inches + DPI |
+| Need publication figure | **Plot settings → Style** (fonts, axis names, colors, line widths — live preview), then **Export**: PNG / JPEG / TIFF, inches + DPI (matplotlib, no browser) |
 | Update available banner | Configure `GITHUB_REPO`; attach `XPS-Deconv-standalone-*.zip` to the GitHub Release |
+| No update banner / “cannot check GitHub” | Open **Settings → Updates**. The app distinguishes no internet, timeout, SSL/proxy, HTTP 404 (no releases), and rate limit. Use **Check for updates now**. |
 | First-time install (no full folder copy) | Run `standalone_version/install_xps_deconv.sh` (or `.bat`) in the target folder; type `YES` |
 | New built-in peaks missing in UI | Peak library → **Restore entire library to defaults** (or delete `data/peak_library.json`) |
 
